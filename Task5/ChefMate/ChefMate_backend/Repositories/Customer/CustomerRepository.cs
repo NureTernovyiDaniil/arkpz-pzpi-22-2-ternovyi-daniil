@@ -36,7 +36,7 @@ namespace ChefMate_backend.Repositories
         {
             var customer = _mapper.Map<Customer>(customerDto);
             await _context.Customers.AddAsync(customer);
-            
+            customerDto.Id = customer.Id;
             return await _context.SaveChangesAsync() > 0;
         }
 

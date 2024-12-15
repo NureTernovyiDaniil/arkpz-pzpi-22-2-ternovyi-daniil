@@ -2,12 +2,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-public class ApplicationDbContext : IdentityDbContext<ApplicationUser, ApplicationRole, string>
+public class ApplicationDbContext : IdentityDbContext<ChefMateUser, ChefMateRole, string>
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
 
     public DbSet<Customer> Customers { get; set; }
+    public DbSet<Menu> Menus { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
@@ -37,6 +38,12 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, Applicati
             .WithMany()
             .HasForeignKey(o => o.CreatedById)
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.Entity<Menu>()
+            .HasMany(m=>m.Items)
+            .WithOne(mi => mi.Menu)
+            .HasForeignKey(mi => mi.MenuId)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Entity<Review>()
             .HasOne(r => r.Customer)

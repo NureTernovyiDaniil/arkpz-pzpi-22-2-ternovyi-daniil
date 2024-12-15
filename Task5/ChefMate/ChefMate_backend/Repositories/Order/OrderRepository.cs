@@ -38,6 +38,9 @@ namespace ChefMate_backend.Repositories
         {
             var order = _mapper.Map<Order>(orderDto);
             await _context.Orders.AddAsync(order);
+
+            orderDto.Id = order.Id;
+
             return await _context.SaveChangesAsync() > 0;
         }
 

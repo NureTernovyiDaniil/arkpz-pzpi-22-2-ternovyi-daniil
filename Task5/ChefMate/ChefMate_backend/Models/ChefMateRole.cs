@@ -2,7 +2,7 @@
 
 namespace ChefMate_backend.Models
 {
-    public class ApplicationRole : IdentityRole
+    public class ChefMateRole : IdentityRole
     {
     }
 }

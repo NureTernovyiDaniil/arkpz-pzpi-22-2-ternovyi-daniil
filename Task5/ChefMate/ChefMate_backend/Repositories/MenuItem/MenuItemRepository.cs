@@ -33,6 +33,7 @@ namespace ChefMate_backend.Repositories
         {
             var menuItem = _mapper.Map<MenuItem>(menuItemDto);
             await _context.MenuItems.AddAsync(menuItem);
+            menuItemDto.Id = menuItem.Id;
             return await _context.SaveChangesAsync() > 0;
         }
 

@@ -2,7 +2,7 @@
 
 namespace ChefMate_backend.Models
 {
-    public class ApplicationUser : IdentityUser
+    public class ChefMateUser : IdentityUser
     {
     }
 }

@@ -9,6 +9,8 @@ namespace ChefMate_backend
         {
             CreateMap<Customer, CustomerDto>().ReverseMap();
 
+            CreateMap<Menu, MenuDto>().ReverseMap();
+            
             CreateMap<MenuItem, MenuItemDto>().ReverseMap();
 
             CreateMap<Order, OrderDto>().ReverseMap();

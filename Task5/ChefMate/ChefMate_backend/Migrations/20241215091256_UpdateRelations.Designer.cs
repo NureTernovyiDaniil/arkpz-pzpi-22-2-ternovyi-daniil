@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChefMate_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241215091256_UpdateRelations")]
+    partial class UpdateRelations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,7 +24,7 @@ namespace ChefMate_backend.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ChefMate_backend.Models.ChefMateRole", b =>
+            modelBuilder.Entity("ChefMate_backend.Models.ApplicationRole", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -136,27 +139,6 @@ namespace ChefMate_backend.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("ChefMate_backend.Models.Menu", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Menus");
-                });
-
             modelBuilder.Entity("ChefMate_backend.Models.MenuItem", b =>
                 {
                     b.Property<Guid>("Id")
@@ -168,13 +150,11 @@ namespace ChefMate_backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("ImageUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<bool>("IsAvailable")
                         .HasColumnType("bit");
-
-                    b.Property<Guid>("MenuId")
-                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -184,8 +164,6 @@ namespace ChefMate_backend.Migrations
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("MenuId");
 
                     b.ToTable("MenuItems");
                 });
@@ -385,28 +363,6 @@ namespace ChefMate_backend.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("ChefMate_backend.Models.Menu", b =>
-                {
-                    b.HasOne("ChefMate_backend.Models.ChefMateUser", "Owner")
-                        .WithMany()
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Owner");
-                });
-
-            modelBuilder.Entity("ChefMate_backend.Models.MenuItem", b =>
-                {
-                    b.HasOne("ChefMate_backend.Models.Menu", "Menu")
-                        .WithMany("Items")
-                        .HasForeignKey("MenuId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Menu");
-                });
-
             modelBuilder.Entity("ChefMate_backend.Models.Order", b =>
                 {
                     b.HasOne("ChefMate_backend.Models.ChefMateUser", "CreatedBy")
@@ -466,7 +422,7 @@ namespace ChefMate_backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("ChefMate_backend.Models.ChefMateRole", null)
+                    b.HasOne("ChefMate_backend.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -493,7 +449,7 @@ namespace ChefMate_backend.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("ChefMate_backend.Models.ChefMateRole", null)
+                    b.HasOne("ChefMate_backend.Models.ApplicationRole", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -520,11 +476,6 @@ namespace ChefMate_backend.Migrations
                     b.Navigation("Orders");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("ChefMate_backend.Models.Menu", b =>
-                {
-                    b.Navigation("Items");
                 });
 
             modelBuilder.Entity("ChefMate_backend.Models.Order", b =>
