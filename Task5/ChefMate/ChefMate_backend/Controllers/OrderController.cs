@@ -32,30 +32,49 @@ namespace ChefMate_backend.Controllers
         [HttpPost("post")]
         public async Task<IActionResult> Post(OrderDto order)
         {
-            await _orderRepository.Insert(order);
-            return Ok();
+            var result = await _orderRepository.Insert(order);
+            if (result)
+            {
+                return Ok(result);
+            }
+
+            return NotFound();
         }
 
-        [HttpPost("update")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(OrderDto order)
         {
-            await _orderRepository.Update(order);
-            return Ok();
+            var result = await _orderRepository.Update(order);
+            if (result)
+            {
+                return Ok(result);
+            }
+
+            return NotFound();
         }
 
-        [HttpGet("delete/{id}")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var order = await _orderRepository.Retrieve(id);
-            await _orderRepository.Delete(order);
-            return Ok();
+            var result = await _orderRepository.Delete(id);
+            if (result)
+            {
+                return Ok(result);
+            }
+
+            return NotFound();
         }
 
-        [HttpPost("delete")]
+        [HttpDelete("delete")]
         public async Task<IActionResult> Delete(OrderDto order)
         {
-            await _orderRepository.Delete(order);
-            return Ok();
+            var result = await _orderRepository.Delete(order);
+            if (result)
+            {
+                return Ok(result);
+            }
+
+            return NotFound();
         }
     }
 }

@@ -61,12 +61,17 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.SlidingExpiration = true;
 });
 
-builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 builder.Services.AddSwaggerGen(options =>
 {
@@ -113,6 +118,32 @@ using (var scope = app.Services.CreateScope())
     {
         var logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "Error occurred while migrating the database");
+    }
+
+    try
+    {
+        var roleManager = services.GetRequiredService<RoleManager<ChefMateRole>>();
+
+        var roles = new List<ChefMateRole>
+        {
+            new ChefMateRole { Name = "Admin" },
+            new ChefMateRole { Name = "Customer" },
+            new ChefMateRole { Name = "Chef" },
+            new ChefMateRole { Name = "Waiter" }
+        };
+
+        foreach (var role in roles)
+        {
+            if (!roleManager.RoleExistsAsync(role.Name).Result)
+            {
+                roleManager.CreateAsync(role).Wait();
+            }
+        }
+    }
+    catch (Exception ex)
+    {
+        var logger = services.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "An error occurred creating the DB.");
     }
 }
 

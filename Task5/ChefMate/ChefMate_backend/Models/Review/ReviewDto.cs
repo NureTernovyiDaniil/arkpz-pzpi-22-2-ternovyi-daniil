@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ChefMate_backend.Models
+﻿namespace ChefMate_backend.Models
 {
     public class ReviewDto
     {

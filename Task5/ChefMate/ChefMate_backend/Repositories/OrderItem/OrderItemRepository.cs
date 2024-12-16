@@ -41,13 +41,13 @@ namespace ChefMate_backend.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<OrderItemDto>> Retrieve()
+        public async Task<IEnumerable<OrderItem>> Retrieve()
         {
             var orderItems = await _context.OrderItems.ToListAsync();
-            return _mapper.Map<IEnumerable<OrderItemDto>>(orderItems);
+            return orderItems;
         }
 
-        public async Task<OrderItemDto> Retrieve(Guid orderItemId)
+        public async Task<OrderItem> Retrieve(Guid orderItemId)
         {
             var orderItem = await _context.OrderItems.FindAsync(orderItemId);
             if (orderItem == null)
@@ -55,7 +55,7 @@ namespace ChefMate_backend.Repositories
                 throw new KeyNotFoundException("Order item not found.");
             }
 
-            return _mapper.Map<OrderItemDto>(orderItem);
+            return orderItem;
         }
 
         public async Task<bool> Update(OrderItemDto orderItemDto)

@@ -27,22 +27,6 @@ namespace ChefMate_backend.Controllers
             _jwtTokenService = jwtTokenService;
         }
 
-        [HttpGet("init-roles")]
-        public async Task <IActionResult> InitRoles()
-        {
-            if (!await _roleManager.RoleExistsAsync("Admin"))
-            {
-                await _roleManager.CreateAsync(new ChefMateRole { Name = "Admin" });
-            }
-
-            if (!await _roleManager.RoleExistsAsync("User"))
-            {
-                await _roleManager.CreateAsync(new ChefMateRole { Name = "User" });
-            }
-
-            return Ok();
-        }
-
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
@@ -64,7 +48,7 @@ namespace ChefMate_backend.Controllers
                 return BadRequest(result.Errors);
             }
 
-            await _userManager.AddToRoleAsync(user, "User");
+            await _userManager.AddToRoleAsync(user, request.Role);
             return Ok(new { Message = "User registered successfully." });
         }
 

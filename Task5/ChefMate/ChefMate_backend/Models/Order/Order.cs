@@ -10,14 +10,9 @@ namespace ChefMate_backend.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
-        [JsonIgnore]
-        public virtual Customer Customer { get; set; }
-
-        public string CreatedById { get; set; }
-        [JsonIgnore]
-        public virtual ChefMateUser CreatedBy { get; set; }
-
+        public string CustomerId { get; set; }
+        public string WaiterId { get; set; }
+        public string ChefId { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public decimal TotalAmount { get; set; }

@@ -7,7 +7,6 @@ public class ApplicationDbContext : IdentityDbContext<ChefMateUser, ChefMateRole
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
 
-    public DbSet<Customer> Customers { get; set; }
     public DbSet<Menu> Menus { get; set; }
     public DbSet<MenuItem> MenuItems { get; set; }
     public DbSet<Order> Orders { get; set; }
@@ -28,27 +27,10 @@ public class ApplicationDbContext : IdentityDbContext<ChefMateUser, ChefMateRole
             .WithMany()
             .HasForeignKey(oi => oi.MenuItemId);
 
-        builder.Entity<Order>()
-            .HasOne(o => o.Customer)
-            .WithMany(c => c.Orders)
-            .HasForeignKey(o => o.CustomerId);
-
-        builder.Entity<Order>()
-            .HasOne(o => o.CreatedBy)
-            .WithMany()
-            .HasForeignKey(o => o.CreatedById)
-            .OnDelete(DeleteBehavior.NoAction);
-
         builder.Entity<Menu>()
             .HasMany(m=>m.Items)
             .WithOne(mi => mi.Menu)
             .HasForeignKey(mi => mi.MenuId)
             .OnDelete(DeleteBehavior.Cascade);
-
-        builder.Entity<Review>()
-            .HasOne(r => r.Customer)
-            .WithMany(c => c.Reviews)
-            .HasForeignKey(r => r.CustomerId)
-            .OnDelete(DeleteBehavior.NoAction);  
     }
 }

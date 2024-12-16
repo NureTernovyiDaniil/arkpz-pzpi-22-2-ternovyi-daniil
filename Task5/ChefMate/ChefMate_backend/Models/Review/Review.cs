@@ -5,9 +5,9 @@ namespace ChefMate_backend.Models
     public class Review
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
+        public string CustomerId { get; set; }
         [JsonIgnore]
-        public virtual Customer Customer { get; set; }
+        public virtual ChefMateUser Customer { get; set; }
 
         public Guid OrderId { get; set; }
         [JsonIgnore]

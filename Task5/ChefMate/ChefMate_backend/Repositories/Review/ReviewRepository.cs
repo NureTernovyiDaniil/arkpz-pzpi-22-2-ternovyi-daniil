@@ -23,16 +23,16 @@ namespace ChefMate_backend.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<ReviewDto>> Retrieve()
+        public async Task<IEnumerable<Review>> Retrieve()
         {
             var reviews = await _context.Reviews.ToListAsync();
-            return _mapper.Map<IEnumerable<ReviewDto>>(reviews);
+            return reviews;
         }
 
-        public async Task<ReviewDto> Retrieve(Guid reviewId)
+        public async Task<Review> Retrieve(Guid reviewId)
         {
             var review = await _context.Reviews.FindAsync(reviewId);
-            return _mapper.Map<ReviewDto>(review);
+            return _mapper.Map<Review>(review);
         }
 
         public async Task<bool> Update(ReviewDto reviewDto)

@@ -15,18 +15,20 @@ namespace ChefMate_backend.Repositories
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<MenuItemDto>> Retrieve()
+        public async Task<IEnumerable<MenuItem>> Retrieve()
         {
-            var menuItems = await _context.MenuItems.ToListAsync();
-            return _mapper.Map<IEnumerable<MenuItemDto>>(menuItems);
+            return await _context.MenuItems.ToListAsync();
         }
 
-        public async Task<MenuItemDto> Retrieve(Guid id)
+        public async Task<MenuItem> Retrieve(Guid id)
         {
             var menuItem = await _context.MenuItems.FindAsync(id);
             if (menuItem == null)
+            {
                 throw new KeyNotFoundException("MenuItem not found.");
-            return _mapper.Map<MenuItemDto>(menuItem);
+            }
+
+            return menuItem;
         }
 
         public async Task<bool> Insert(MenuItemDto menuItemDto)

@@ -4,8 +4,8 @@ namespace ChefMate_backend.Repositories
 {
     public interface IMenuRepository
     {
-        Task<IEnumerable<MenuDto>> Retrieve();
-        Task<MenuDto> Retrieve(Guid id);
+        Task<IEnumerable<Menu>> Retrieve();
+        Task<Menu> Retrieve(Guid id);
         Task<bool> Insert(MenuDto menuItem);
         Task<bool> Update(MenuDto menuItem);
         Task<bool> Delete(MenuDto menuItem);

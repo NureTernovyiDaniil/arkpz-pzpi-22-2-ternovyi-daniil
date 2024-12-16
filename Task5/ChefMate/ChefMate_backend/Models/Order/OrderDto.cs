@@ -6,8 +6,9 @@ namespace ChefMate_backend.Models
     public class OrderDto
     {
         public Guid Id { get; set; }
-        public Guid CustomerId { get; set; }
-        public string CreatedById { get; set; }
+        public string CustomerId { get; set; }
+        public string WaiterId { get; set; }
+        public string ChefId { get; set; }
         public DateTime OrderDate { get; set; }
         public OrderStatus Status { get; set; }
         public decimal TotalAmount { get; set; }

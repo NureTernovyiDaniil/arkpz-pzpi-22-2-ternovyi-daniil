@@ -1,10 +1,6 @@
 ﻿using AutoMapper;
 using ChefMate_backend.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace ChefMate_backend.Repositories
 {
@@ -44,26 +40,24 @@ namespace ChefMate_backend.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
-        public async Task<IEnumerable<MenuDto>> Retrieve()
+        public async Task<IEnumerable<Menu>> Retrieve()
         {
-            var entities = await _context.Menus.ToListAsync();
-            return _mapper.Map<IEnumerable<MenuDto>>(entities);
+            return await _context.Menus.Include(x=>x.Items).ToListAsync();
         }
 
-        public async Task<MenuDto> Retrieve(Guid id)
+        public async Task<Menu?> Retrieve(Guid id)
         {
-            var entity = await _context.Menus.FindAsync(id);
-            if (entity == null)
-                return null;
-
-            return _mapper.Map<MenuDto>(entity);
+            var entity = await _context.Menus.Include(x => x.Items).FirstOrDefaultAsync(m => m.Id == id);
+            return entity;
         }
 
         public async Task<bool> Update(MenuDto menuItem)
         {
             var entity = await _context.Menus.FindAsync(menuItem.Id);
             if (entity == null)
+            {
                 return false;
+            }
 
             _mapper.Map(menuItem, entity);
             _context.Menus.Update(entity);

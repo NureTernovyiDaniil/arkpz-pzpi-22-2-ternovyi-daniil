@@ -29,33 +29,56 @@ namespace ChefMate_backend.Controllers
             return Ok(menuItem);
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpPost("post")]
         public async Task<IActionResult> Post(MenuItemDto menuItem)
         {
-            await _menuItemRepository.Insert(menuItem);
-            return Ok();
+            var result = await _menuItemRepository.Insert(menuItem);
+            if(result)
+            {
+                return Ok(menuItem);
+            }
+
+            return BadRequest();
         }
 
-        [HttpPost("update")]
+        //[Authorize(Roles = "Admin")]
+        [HttpPut("update")]
         public async Task<IActionResult> Update(MenuItemDto menuItem)
         {
-            await _menuItemRepository.Update(menuItem);
-            return Ok();
+            var result = await _menuItemRepository.Update(menuItem);
+            if (result)
+            {
+                return Ok(menuItem);
+            }
+
+            return BadRequest();
         }
 
-        [HttpGet("delete/{id}")]
+        //[Authorize(Roles = "Admin")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var menuItem = await _menuItemRepository.Retrieve(id);
-            await _menuItemRepository.Delete(menuItem);
-            return Ok();
+            var result = await _menuItemRepository.Delete(id);
+            if (result)
+            {
+                return Ok(result);
+            }
+
+            return BadRequest();
         }
 
-        [HttpPost("delete")]
+        //[Authorize(Roles = "Admin")]
+        [HttpDelete("delete")]
         public async Task<IActionResult> Delete(MenuItemDto menuItem)
         {
-            await _menuItemRepository.Delete(menuItem);
-            return Ok();
+            var result = await _menuItemRepository.Delete(menuItem);
+            if (result)
+            {
+                return Ok(menuItem);
+            }
+
+            return BadRequest();
         }
     }
 }

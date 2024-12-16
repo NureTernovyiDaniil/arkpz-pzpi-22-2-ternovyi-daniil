@@ -1,5 +1,6 @@
 ﻿using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChefMate_backend.Controllers
@@ -16,14 +17,14 @@ namespace ChefMate_backend.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<MenuDto>>> GetAllMenus()
+        public async Task<ActionResult> Retrieve()
         {
             var menus = await _menuRepository.Retrieve();
             return Ok(menus);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<MenuDto>> GetMenuById(Guid id)
+        public async Task<ActionResult> Retrieve(Guid id)
         {
             var menu = await _menuRepository.Retrieve(id);
             if (menu == null)
@@ -34,23 +35,25 @@ namespace ChefMate_backend.Controllers
             return Ok(menu);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<ActionResult> CreateMenu([FromBody] MenuDto menuDto)
+        public async Task<ActionResult> InsertMenu([FromBody] MenuDto menuDto)
         {
             if (menuDto == null)
             {
-                return BadRequest("Menu data is required.");
+                return NoContent();
             }
 
             var success = await _menuRepository.Insert(menuDto);
-            if (!success)
+            if(success)
             {
-                return StatusCode(500, "An error occurred while creating the menu.");
+                return Ok(menuDto);
             }
 
-            return CreatedAtAction(nameof(GetMenuById), new { id = menuDto.Id }, menuDto);
+            return BadRequest();
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateMenu(Guid id, [FromBody] MenuDto menuDto)
         {
@@ -60,26 +63,34 @@ namespace ChefMate_backend.Controllers
             }
 
             var success = await _menuRepository.Update(menuDto);
-            if (!success)
+            if(success)
+            {
+                return Ok(menuDto);
+            }
+            else
             {
                 return NotFound();
             }
-
-            return NoContent();
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteMenu(Guid id)
         {
             var success = await _menuRepository.Delete(id);
+            if (success)
+            {
+                return Ok(success);
+            }
             if (!success)
             {
-                return NotFound();
+                return NotFound(success);
             }
 
             return NoContent();
         }
 
+        //[Authorize(Roles = "Admin")]
         [HttpDelete]
         public async Task<ActionResult> DeleteMenu([FromBody] MenuDto menuDto)
         {
