@@ -6,9 +6,6 @@ namespace ChefMate_backend.Models
     {
         public Guid Id { get; set; }
         public string CustomerId { get; set; }
-        [JsonIgnore]
-        public virtual ChefMateUser Customer { get; set; }
-
         public Guid OrderId { get; set; }
         [JsonIgnore]
         public virtual Order Order { get; set; }

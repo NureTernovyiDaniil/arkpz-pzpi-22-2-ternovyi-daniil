@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <Folder Include="Enums\" />
+    <Folder Include="Migrations\Identity\" />
   </ItemGroup>
 
 </Project>

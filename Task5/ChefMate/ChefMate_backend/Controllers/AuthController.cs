@@ -10,18 +10,15 @@ namespace ChefMate_backend.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private readonly RoleManager<ChefMateRole> _roleManager;
-        private readonly UserManager<ChefMateUser> _userManager;
-        private readonly SignInManager<ChefMateUser> _signInManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
+        private readonly SignInManager<IdentityUser<Guid>> _signInManager;
         private readonly JwtTokenService _jwtTokenService;
 
         public AuthController(
-            RoleManager<ChefMateRole> roleManager,
-            UserManager<ChefMateUser> userManager,
-            SignInManager<ChefMateUser> signInManager,
+            UserManager<IdentityUser<Guid>> userManager,
+            SignInManager<IdentityUser<Guid>> signInManager,
             JwtTokenService jwtTokenService)
         {
-            _roleManager = roleManager;
             _userManager = userManager;
             _signInManager = signInManager;
             _jwtTokenService = jwtTokenService;
@@ -35,7 +32,7 @@ namespace ChefMate_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new ChefMateUser
+            var user = new IdentityUser<Guid>
             {
                 UserName = request.Email,
                 Email = request.Email

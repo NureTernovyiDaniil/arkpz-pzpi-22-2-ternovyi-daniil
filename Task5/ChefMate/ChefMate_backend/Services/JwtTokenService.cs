@@ -11,26 +11,26 @@ namespace ChefMate_backend.Services
     public class JwtTokenService
     {
         private readonly JwtSettings _jwtSettings;
-        private readonly RoleManager<ChefMateRole> _roleManager;
-        private readonly UserManager<ChefMateUser> _userManager;
+        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly UserManager<IdentityUser<Guid>> _userManager;
 
         public JwtTokenService(
             IOptions<JwtSettings> jwtSettings,
-            RoleManager<ChefMateRole> roleManager,
-            UserManager<ChefMateUser> userManager)
+            RoleManager<IdentityRole<Guid>> roleManager,
+            UserManager<IdentityUser<Guid>> userManager)
         {
             _jwtSettings = jwtSettings.Value;
             _roleManager = roleManager;
             _userManager = userManager;
         }
 
-        public async Task<string> GenerateTokenAsync(ChefMateUser user)
+        public async Task<string> GenerateTokenAsync(IdentityUser<Guid> user)
         {
             var roles = await _userManager.GetRolesAsync(user);
 
             var claims = new List<Claim>
             {
-                new Claim("UserId", user.Id),
+                new Claim("UserId", user.Id.ToString()),
                 new Claim("Email", user.Email),
                 roles.Select(role => new Claim("Role", role)).FirstOrDefault()
             };

@@ -15,6 +15,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddDbContext<IdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+
 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
 builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
@@ -22,7 +25,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<JwtTokenService>();
 
-builder.Services.AddIdentity<ChefMateUser, ChefMateRole>(options =>
+builder.Services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
@@ -31,7 +34,7 @@ builder.Services.AddIdentity<ChefMateUser, ChefMateRole>(options =>
     options.Password.RequireLowercase = true;
     options.User.RequireUniqueEmail = true;
 })
-.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddEntityFrameworkStores<IdentityContext>()
 .AddDefaultTokenProviders();
 
 builder.Services.AddAuthentication(options =>
@@ -116,6 +119,9 @@ using (var scope = app.Services.CreateScope())
     {
         var context = services.GetRequiredService<ApplicationDbContext>();
         context.Database.Migrate();
+
+        var identityContext = services.GetRequiredService<IdentityContext>();
+        identityContext.Database.Migrate();
     }
     catch (Exception ex)
     {
@@ -125,14 +131,14 @@ using (var scope = app.Services.CreateScope())
 
     try
     {
-        var roleManager = services.GetRequiredService<RoleManager<ChefMateRole>>();
+        var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
 
-        var roles = new List<ChefMateRole>
+        var roles = new List<IdentityRole<Guid>>
         {
-            new ChefMateRole { Name = "Admin" },
-            new ChefMateRole { Name = "Customer" },
-            new ChefMateRole { Name = "Chef" },
-            new ChefMateRole { Name = "Waiter" }
+            new IdentityRole<Guid> { Name = "Admin" },
+            new IdentityRole<Guid> { Name = "Customer" },
+            new IdentityRole<Guid> { Name = "Chef" },
+            new IdentityRole<Guid> { Name = "Waiter" }
         };
 
         foreach (var role in roles)

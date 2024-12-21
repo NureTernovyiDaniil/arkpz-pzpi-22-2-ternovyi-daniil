@@ -1,8 +1,7 @@
 ﻿using ChefMate_backend.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-public class ApplicationDbContext : IdentityDbContext<ChefMateUser, ChefMateRole, string>
+public class ApplicationDbContext : DbContext
 {
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options) { }
