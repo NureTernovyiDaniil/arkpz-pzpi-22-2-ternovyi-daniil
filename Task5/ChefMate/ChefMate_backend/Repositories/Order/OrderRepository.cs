@@ -50,7 +50,43 @@ namespace ChefMate_backend.Repositories
                 .Include(o => o.OrderItems)
                 .ToListAsync();
 
+            if(orders.Any())
+            {
+                foreach(var order in orders)
+                {
+                    if(order.OrderItems.Any())
+                    {
+                        foreach (var item in order.OrderItems)
+                        {
+                            item.MenuItem = await _context.MenuItems.FirstOrDefaultAsync(x => x.Id == item.MenuItemId);
+                        }
+                    }
+                }
+            }
+
             return orders;
+        }
+
+        public async Task<List<Order>> RetrieveByPeriod(DateTime startDate, DateTime endDate)
+        {
+            var orders = await _context.Orders
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.MenuItem)
+            .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+            .ToListAsync();
+
+            return orders;
+        }
+
+        public async Task<List<Order>> RetrieveByDate(DateTime targetDate)
+        {
+            var ordersForDate = await _context.Set<Order>()
+            .Include(o => o.OrderItems)
+            .ThenInclude(oi => oi.MenuItem)
+            .Where(o => o.OrderDate.Date == targetDate.Date)
+            .ToListAsync();
+
+            return ordersForDate;
         }
 
         public async Task<Order> Retrieve(Guid orderId)
@@ -64,6 +100,14 @@ namespace ChefMate_backend.Repositories
                 throw new KeyNotFoundException("Order not found.");
             }
 
+            if(order.OrderItems.Any())
+            {
+                foreach (var item in order.OrderItems)
+                {
+                    item.MenuItem = await _context.MenuItems.FirstOrDefaultAsync(x => x.Id == item.MenuItemId);
+                }
+            }
+           
             return order;
         }
 

@@ -20,6 +20,12 @@ namespace ChefMate_backend.Repositories
             return await _context.MenuItems.ToListAsync();
         }
 
+        public async Task<IEnumerable<MenuItem>> Retrieve(List<Guid> ids)
+        {
+            var menuItems = await _context.MenuItems.ToListAsync();
+            return menuItems.Where(x=>ids.Contains(x.Id));
+        }
+
         public async Task<MenuItem> Retrieve(Guid id)
         {
             var menuItem = await _context.MenuItems.FindAsync(id);
@@ -29,6 +35,12 @@ namespace ChefMate_backend.Repositories
             }
 
             return menuItem;
+        }
+
+        public async Task<List<MenuItemDto>> RetriveByMenuId(Guid id)
+        {
+            var menuItems = await _context.MenuItems.Where(x=>x.MenuId == id).ToListAsync();
+            return _mapper.Map<List<MenuItemDto>>(menuItems);
         }
 
         public async Task<bool> Insert(MenuItemDto menuItemDto)

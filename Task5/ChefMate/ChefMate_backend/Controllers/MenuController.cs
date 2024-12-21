@@ -1,6 +1,5 @@
 ﻿using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChefMate_backend.Controllers
@@ -35,7 +34,6 @@ namespace ChefMate_backend.Controllers
             return Ok(menu);
         }
 
-        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult> InsertMenu([FromBody] MenuDto menuDto)
         {

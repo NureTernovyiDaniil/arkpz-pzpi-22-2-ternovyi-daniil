@@ -66,6 +66,9 @@ builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<OrdersService>();
+builder.Services.AddScoped<ReportBuilderService>();
+builder.Services.AddScoped<ReportService>();
 
 builder.Services.AddControllers()
 .AddJsonOptions(options =>

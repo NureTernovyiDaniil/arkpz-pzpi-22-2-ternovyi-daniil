@@ -41,6 +41,13 @@ namespace ChefMate_backend.Repositories
             return await _context.SaveChangesAsync() > 0;
         }
 
+        public async Task<bool> Insert(List<OrderItemDto> orderItemsDto)
+        {
+            var orderItem = _mapper.Map<List<OrderItem>>(orderItemsDto);
+            await _context.OrderItems.AddRangeAsync(orderItem);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
         public async Task<IEnumerable<OrderItem>> Retrieve()
         {
             var orderItems = await _context.OrderItems.ToListAsync();

@@ -1,5 +1,6 @@
 ﻿using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
+using ChefMate_backend.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChefMate_backend.Controllers
@@ -9,10 +10,12 @@ namespace ChefMate_backend.Controllers
     public class OrderItemController : ControllerBase
     {
         private readonly IOrderItemRepository _orderItemRepository;
+        private readonly OrdersService _ordersService;
 
-        public OrderItemController(IOrderItemRepository orderItemRepository)
+        public OrderItemController(IOrderItemRepository orderItemRepository, OrdersService ordersService)
         {
             _orderItemRepository = orderItemRepository;
+            _ordersService = ordersService;
         }
 
         [HttpGet]
@@ -35,6 +38,21 @@ namespace ChefMate_backend.Controllers
             var result = await _orderItemRepository.Insert(orderItem);
             if(result)
             {
+                await _ordersService.HandleOrder(orderItem.OrderId);
+                return Ok(result);
+            }
+
+            return BadRequest();
+        }
+
+        [HttpPost("post/list")]
+        public async Task<IActionResult> PostList(List<OrderItemDto> orderItem)
+        {
+            var result = await _orderItemRepository.Insert(orderItem);
+            if (result)
+            {
+                var orderId = orderItem.FirstOrDefault().OrderId;
+                await _ordersService.HandleOrder(orderId);
                 return Ok(result);
             }
 
