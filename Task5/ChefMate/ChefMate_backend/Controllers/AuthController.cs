@@ -10,13 +10,13 @@ namespace ChefMate_backend.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private readonly UserManager<IdentityUser<Guid>> _userManager;
-        private readonly SignInManager<IdentityUser<Guid>> _signInManager;
+        private readonly UserManager<ChefMateUser> _userManager;
+        private readonly SignInManager<ChefMateUser> _signInManager;
         private readonly JwtTokenService _jwtTokenService;
 
         public AuthController(
-            UserManager<IdentityUser<Guid>> userManager,
-            SignInManager<IdentityUser<Guid>> signInManager,
+            UserManager<ChefMateUser> userManager,
+            SignInManager<ChefMateUser> signInManager,
             JwtTokenService jwtTokenService)
         {
             _userManager = userManager;
@@ -32,11 +32,21 @@ namespace ChefMate_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            var user = new IdentityUser<Guid>
+            if(request.OrganizationId == null && request.Role != "Superadmin")
+            {
+                return BadRequest("For each users that aren`t superadmins OrganizationId is required");
+            }
+
+            var user = new ChefMateUser
             {
                 UserName = request.Email,
-                Email = request.Email
+                Email = request.Email,
             };
+
+            if(request.Role != "Superadmin")
+            {
+                user.OrganizationId = request.OrganizationId;
+            }
 
             var result = await _userManager.CreateAsync(user, request.Password);
 

@@ -67,23 +67,23 @@ namespace ChefMate_backend.Repositories
             return orders;
         }
 
-        public async Task<List<Order>> RetrieveByPeriod(DateTime startDate, DateTime endDate)
+        public async Task<List<Order>> RetrieveByPeriod(DateTime startDate, DateTime endDate, Guid organizationId)
         {
             var orders = await _context.Orders
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.MenuItem)
-            .Where(o => o.OrderDate >= startDate && o.OrderDate <= endDate)
+            .Where(o => (o.OrderDate.Date >= startDate.Date && o.OrderDate.Date <= endDate.Date) && o.OrganizationId == organizationId)
             .ToListAsync();
 
             return orders;
         }
 
-        public async Task<List<Order>> RetrieveByDate(DateTime targetDate)
+        public async Task<List<Order>> RetrieveByDate(DateTime targetDate, Guid organizationId)
         {
             var ordersForDate = await _context.Set<Order>()
             .Include(o => o.OrderItems)
             .ThenInclude(oi => oi.MenuItem)
-            .Where(o => o.OrderDate.Date == targetDate.Date)
+            .Where(o => o.OrderDate.Date == targetDate.Date && o.OrganizationId == organizationId)
             .ToListAsync();
 
             return ordersForDate;

@@ -14,7 +14,7 @@ namespace ChefMate_backend.Models
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsAvailable { get; set; }
-
+        public int TimeForCooking { get; set; }
         public Guid MenuId { get; set; }
         [JsonIgnore]
         public virtual Menu Menu { get; set; }

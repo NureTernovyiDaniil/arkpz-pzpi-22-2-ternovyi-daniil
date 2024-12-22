@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ChefMate_backend.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20241221160807_InitReimplementation")]
-    partial class InitReimplementation
+    [Migration("20241222002705_InitFix")]
+    partial class InitFix
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -34,11 +34,12 @@ namespace ChefMate_backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("OwnerId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Menus");
                 });
@@ -69,6 +70,9 @@ namespace ChefMate_backend.Migrations
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("TimeForCooking")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.HasIndex("MenuId");
@@ -89,6 +93,12 @@ namespace ChefMate_backend.Migrations
                     b.Property<DateTime>("OrderDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<Guid>("OrganizationId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
                     b.Property<string>("TableNum")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -96,10 +106,15 @@ namespace ChefMate_backend.Migrations
                     b.Property<decimal?>("TotalAmount")
                         .HasColumnType("decimal(18,2)");
 
+                    b.Property<int>("TotalTimeForCooking")
+                        .HasColumnType("int");
+
                     b.Property<string>("WaiterId")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("OrganizationId");
 
                     b.ToTable("Orders");
                 });
@@ -129,6 +144,25 @@ namespace ChefMate_backend.Migrations
                     b.HasIndex("OrderId");
 
                     b.ToTable("OrderItems");
+                });
+
+            modelBuilder.Entity("ChefMate_backend.Models.Organization", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Organizations");
                 });
 
             modelBuilder.Entity("ChefMate_backend.Models.Review", b =>
@@ -161,6 +195,17 @@ namespace ChefMate_backend.Migrations
                     b.ToTable("Reviews");
                 });
 
+            modelBuilder.Entity("ChefMate_backend.Models.Menu", b =>
+                {
+                    b.HasOne("ChefMate_backend.Models.Organization", "Organization")
+                        .WithMany("Menus")
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
+                });
+
             modelBuilder.Entity("ChefMate_backend.Models.MenuItem", b =>
                 {
                     b.HasOne("ChefMate_backend.Models.Menu", "Menu")
@@ -170,6 +215,17 @@ namespace ChefMate_backend.Migrations
                         .IsRequired();
 
                     b.Navigation("Menu");
+                });
+
+            modelBuilder.Entity("ChefMate_backend.Models.Order", b =>
+                {
+                    b.HasOne("ChefMate_backend.Models.Organization", "Organization")
+                        .WithMany()
+                        .HasForeignKey("OrganizationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Organization");
                 });
 
             modelBuilder.Entity("ChefMate_backend.Models.OrderItem", b =>
@@ -210,6 +266,11 @@ namespace ChefMate_backend.Migrations
             modelBuilder.Entity("ChefMate_backend.Models.Order", b =>
                 {
                     b.Navigation("OrderItems");
+                });
+
+            modelBuilder.Entity("ChefMate_backend.Models.Organization", b =>
+                {
+                    b.Navigation("Menus");
                 });
 #pragma warning restore 612, 618
         }

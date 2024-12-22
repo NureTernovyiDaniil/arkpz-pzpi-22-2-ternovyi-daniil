@@ -14,83 +14,7 @@ namespace ChefMate_backend.Services
             _menuRepository = menuRepository;
         }
 
-        /*public async Task<byte[]> GeneratePdfReport<T>(List<T> data, string reportTitle) where T : class
-        {
-            var htmlContent = $@"
-            <html>
-                <head>
-                    <title>{reportTitle}</title>
-                    <style>
-                        body {{
-                            font-family: Arial, sans-serif;
-                            margin: 20px;
-                        }}
-                        h1 {{
-                            text-align: center;
-                            color: #333;
-                        }}
-                        table {{
-                            width: 100%;
-                            border-collapse: collapse;
-                            margin-top: 20px;
-                        }}
-                        th, td {{
-                            border: 1px solid #ddd;
-                            padding: 8px;
-                            text-align: left;
-                        }}
-                        th {{
-                            background-color: #f4f4f4;
-                            font-weight: bold;
-                            color: #333;
-                        }}
-                        tr:nth-child(even) {{
-                            background-color: #f9f9f9;
-                        }}
-                        tr:hover {{
-                            background-color: #f1f1f1;
-                        }}
-                    </style>
-                </head>
-                <body>
-                    <h1>{reportTitle}</h1>
-                    <table>
-                        <thead>
-                            <tr>
-                                {await GenerateTableHeaders<T>()}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {await GenerateTableRows(data)}
-                        </tbody>
-                    </table>
-                </body>
-            </html>";
-
-            using var memoryStream = new MemoryStream();
-
-            HtmlConverter.ConvertToPdf(htmlContent, memoryStream);
-
-            return memoryStream.ToArray();
-        }
-
-
-        private async Task<string> GenerateTableHeaders<T>() where T : class
-        {
-            var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            return string.Join("", properties.Select(p => $"<th>{p.Name}</th>"));
-        }
-
-        private async Task<string> GenerateTableRows<T>(List<T> data) where T : class
-        {
-            return string.Join("", data.Select(item =>
-            {
-                var properties = typeof(T).GetProperties(BindingFlags.Public | BindingFlags.Instance);
-                return $"<tr>{string.Join("", properties.Select(p => $"<td>{p.GetValue(item)}</td>"))}</tr>";
-            }));
-        }*/
-
-        public async Task<byte[]> GenerateWeekReport(WeeklyReport report)
+        public async Task<byte[]> GeneratePeriodReport(WeeklyReport report)
         {
             var html = $@"
             <!DOCTYPE html>
@@ -98,7 +22,7 @@ namespace ChefMate_backend.Services
             <head>
                 <meta charset='UTF-8'>
                 <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                <title>Weekly Report</title>
+                <title>Звіт за період</title>
                 <style>
                     body {{ font-family: Arial, sans-serif; line-height: 1.6; }}
                     h1, h2, h3 {{ color: #333; }}
@@ -113,16 +37,16 @@ namespace ChefMate_backend.Services
                 <h2>{report.StartDate:dd.MM.yyyy} - {report.EndDate:dd.MM.yyyy}</h2>
     
                 <div class='summary'>
-                    <p><strong>Total Income:</strong> {report.TotalIncome:C}</p>
-                    <p><strong>Average Check:</strong> {report.AverageCheck:C}</p>
+                    <p><strong>Загальний прибуток:</strong> {report.TotalIncome:C}</p>
+                    <p><strong>Середній чек:</strong> {report.AverageCheck:C}</p>
                 </div>
     
-                <h3>Top-3 Profitable Dishes</h3>
+                <h3>Топ-3 найприбутковіших страв</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Dish</th>
-                            <th>Total Income</th>
+                            <th>Назва страви</th>
+                            <th>Дохід</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -134,12 +58,12 @@ namespace ChefMate_backend.Services
                     </tbody>
                 </table>
 
-                <h3>Sales by Day</h3>
+                <h3>Продажі по дням</h3>
                 <table>
                     <thead>
                         <tr>
-                            <th>Day</th>
-                            <th>Sales</th>
+                            <th>День</th>
+                            <th>Сума</th>
                         </tr>
                     </thead>
                     <tbody>

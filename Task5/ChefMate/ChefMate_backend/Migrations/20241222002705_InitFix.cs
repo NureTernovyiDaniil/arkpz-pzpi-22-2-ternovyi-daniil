@@ -6,22 +6,40 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ChefMate_backend.Migrations
 {
     /// <inheritdoc />
-    public partial class InitReimplementation : Migration
+    public partial class InitFix : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Organizations",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Organizations", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Menus",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    OwnerId = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Menus", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Menus_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -33,11 +51,19 @@ namespace ChefMate_backend.Migrations
                     WaiterId = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OrderDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     TableNum = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true)
+                    TotalAmount = table.Column<decimal>(type: "decimal(18,2)", nullable: true),
+                    TotalTimeForCooking = table.Column<int>(type: "int", nullable: false),
+                    OrganizationId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Orders", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Orders_Organizations_OrganizationId",
+                        column: x => x.OrganizationId,
+                        principalTable: "Organizations",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -50,6 +76,7 @@ namespace ChefMate_backend.Migrations
                     Price = table.Column<decimal>(type: "decimal(18,2)", nullable: false),
                     ImageUrl = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     IsAvailable = table.Column<bool>(type: "bit", nullable: false),
+                    TimeForCooking = table.Column<int>(type: "int", nullable: false),
                     MenuId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -118,6 +145,11 @@ namespace ChefMate_backend.Migrations
                 column: "MenuId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Menus_OrganizationId",
+                table: "Menus",
+                column: "OrganizationId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_OrderItems_MenuItemId",
                 table: "OrderItems",
                 column: "MenuItemId");
@@ -126,6 +158,11 @@ namespace ChefMate_backend.Migrations
                 name: "IX_OrderItems_OrderId",
                 table: "OrderItems",
                 column: "OrderId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Orders_OrganizationId",
+                table: "Orders",
+                column: "OrganizationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Reviews_OrderId",
@@ -150,6 +187,9 @@ namespace ChefMate_backend.Migrations
 
             migrationBuilder.DropTable(
                 name: "Menus");
+
+            migrationBuilder.DropTable(
+                name: "Organizations");
         }
     }
 }

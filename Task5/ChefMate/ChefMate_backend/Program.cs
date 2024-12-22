@@ -25,7 +25,7 @@ builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.AddScoped<JwtTokenService>();
 
-builder.Services.AddIdentity<IdentityUser<Guid>, IdentityRole<Guid>>(options =>
+builder.Services.AddIdentity<ChefMateUser, IdentityRole<Guid>>(options =>
 {
     options.Password.RequireDigit = true;
     options.Password.RequiredLength = 6;
@@ -49,6 +49,7 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuer = true,
         ValidateAudience = true,
         ValidateLifetime = true,
+        RoleClaimType = "role",
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwtSettings.Issuer,
         ValidAudience = jwtSettings.Audience,
@@ -69,6 +70,7 @@ builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 builder.Services.AddScoped<OrdersService>();
 builder.Services.AddScoped<ReportBuilderService>();
 builder.Services.AddScoped<ReportService>();
@@ -135,9 +137,9 @@ using (var scope = app.Services.CreateScope())
 
         var roles = new List<IdentityRole<Guid>>
         {
+            new IdentityRole<Guid> { Name = "Superadmin" },
             new IdentityRole<Guid> { Name = "Admin" },
             new IdentityRole<Guid> { Name = "Customer" },
-            new IdentityRole<Guid> { Name = "Chef" },
             new IdentityRole<Guid> { Name = "Waiter" }
         };
 

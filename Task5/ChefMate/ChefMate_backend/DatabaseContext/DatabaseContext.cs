@@ -11,15 +11,23 @@ public class ApplicationDbContext : DbContext
     public DbSet<Order> Orders { get; set; }
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Review> Reviews { get; set; }
+    public DbSet<Organization> Organizations { get; set; }
 
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
 
-        builder.Entity<OrderItem>()
-            .HasOne(oi => oi.Order)
-            .WithMany(o => o.OrderItems)
-            .HasForeignKey(oi => oi.OrderId);
+        builder.Entity<Order>()
+            .HasMany(oi=>oi.OrderItems)
+            .WithOne(o=>o.Order)
+            .HasForeignKey(fk=>fk.OrderId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Order>()
+            .HasOne(o => o.Organization)
+            .WithMany()
+            .HasForeignKey(fk => fk.OrganizationId)
+            .OnDelete(DeleteBehavior.NoAction);
 
         builder.Entity<OrderItem>()
             .HasOne(oi => oi.MenuItem)
@@ -31,5 +39,11 @@ public class ApplicationDbContext : DbContext
             .WithOne(mi => mi.Menu)
             .HasForeignKey(mi => mi.MenuId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.Entity<Menu>()
+            .HasOne(m => m.Organization)
+            .WithMany(o => o.Menus)
+            .HasForeignKey(fk => fk.OrganizationId)
+            .OnDelete(DeleteBehavior.NoAction);
     }
 }

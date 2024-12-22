@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace ChefMate_backend.Models
+﻿namespace ChefMate_backend.Models
 {
     public class MenuItemDto
     {
@@ -10,6 +8,7 @@ namespace ChefMate_backend.Models
         public decimal Price { get; set; }
         public string? ImageUrl { get; set; }
         public bool IsAvailable { get; set; }
+        public int TimeForCooking { get; set; }
         public Guid MenuId { get; set; }
     }
 }

@@ -9,7 +9,8 @@ namespace ChefMate_backend.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public Guid Id { get; set; }
-        public string OwnerId { get; set; }
+        public Guid OrganizationId { get; set; }
+        public Organization Organization { get; set; }
         public string Name { get; set; }
         public virtual ICollection<MenuItem> Items { get; set; }
     }

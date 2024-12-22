@@ -11,9 +11,9 @@ public class ReportService
         _menuItemRepository = menuItemRepository;
     }
 
-    public async Task<WeeklyReport> GenerateWeeklyReport(DateTime startDate, DateTime endDate)
+    public async Task<WeeklyReport> GenerateWeeklyReport(DateTime startDate, DateTime endDate, Guid organizationId)
     {
-        var orders = await _orderRepository.RetrieveByPeriod(startDate, endDate);
+        var orders = await _orderRepository.RetrieveByPeriod(startDate, endDate, organizationId);
         
         if (!orders.Any())
         {
@@ -60,9 +60,9 @@ public class ReportService
         };
     }
 
-    public async Task<DailyReport> GetDailyReportData(DateTime reportDate)
+    public async Task<DailyReport> GetDailyReportData(DateTime reportDate, Guid organizationId)
     {
-        var ordersForDate = await _orderRepository.RetrieveByDate(reportDate);
+        var ordersForDate = await _orderRepository.RetrieveByDate(reportDate, organizationId);
 
         var totalOrders = ordersForDate.Count;
 
@@ -90,9 +90,9 @@ public class ReportService
         };
 
     }
-    public async Task<FinancialReport> GetFinancialReport(DateTime reportDate)
+    public async Task<FinancialReport> GetFinancialReport(DateTime reportDate, Guid organizationId)
     {
-        var ordersForDate = await _orderRepository.RetrieveByDate(reportDate);
+        var ordersForDate = await _orderRepository.RetrieveByDate(reportDate, organizationId);
 
         var totalOrders = ordersForDate.Count;
 

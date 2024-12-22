@@ -16,6 +16,8 @@ namespace ChefMate_backend
             CreateMap<OrderItem, OrderItemDto>().ReverseMap();
 
             CreateMap<Review, ReviewDto>().ReverseMap();
+
+            CreateMap<Organization, OrganizationDto>().ReverseMap();
         }
     }
 }
