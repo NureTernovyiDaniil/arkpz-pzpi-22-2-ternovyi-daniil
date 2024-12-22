@@ -1,6 +1,9 @@
-﻿using ChefMate_backend.Models;
+﻿using ChefMate_backend.Hubs;
+using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
+using iText.Layout.Borders;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace ChefMate_backend.Controllers
 {
@@ -9,10 +12,12 @@ namespace ChefMate_backend.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IServiceScopeFactory _scopeFactory;
 
-        public OrderController(IOrderRepository orderRepository)
+        public OrderController(IOrderRepository orderRepository, IServiceScopeFactory scopeFactory)
         {
             _orderRepository = orderRepository;
+            _scopeFactory = scopeFactory;
         }
 
         [HttpGet]

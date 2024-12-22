@@ -1,9 +1,9 @@
 ﻿using AutoMapper;
+using ChefMate_backend.Hubs;
 using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using iText.Layout.Borders;
+using Microsoft.AspNetCore.SignalR;
 
 namespace ChefMate_backend.Services
 {
@@ -13,14 +13,19 @@ namespace ChefMate_backend.Services
         private readonly IOrderItemRepository _orderItemRepository;
         private readonly IMapper _mapper;
         private readonly IMenuItemRepository _menuItemRepository;
+        private readonly IHubContext<IoTHub> _iotHubContext;
+        private readonly IServiceScopeFactory serviceScopeFactory;
 
         public OrdersService(IOrderRepository orderRepository, IMapper mapper, 
-            IMenuItemRepository menuItemRepository, IOrderItemRepository orderItemRepository)
+            IMenuItemRepository menuItemRepository, IOrderItemRepository orderItemRepository,
+            IHubContext<IoTHub> hubContext, IServiceScopeFactory serviceScopeFactory)
         {
             _orderRepository = orderRepository;
             _mapper = mapper;
             _menuItemRepository = menuItemRepository;
             _orderItemRepository = orderItemRepository;
+            _iotHubContext = hubContext;
+            this.serviceScopeFactory = serviceScopeFactory;
         }
 
         public async Task HandleOrder(Guid orderId)
@@ -52,6 +57,32 @@ namespace ChefMate_backend.Services
 
             var orderDto = _mapper.Map<OrderDto>(order);
             await _orderRepository.Update(orderDto);
+
+            try
+            {
+                using (var scope = serviceScopeFactory.CreateScope())
+                {
+                    var orderFullModel = _orderRepository.Retrieve(orderId);
+                    var hub = scope.ServiceProvider.GetRequiredService<IoTHub>();
+
+                    await hub.SendMessageToGroup(orderDto.OrganizationId, orderFullModel);
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+        }
+
+        public async Task SendToIoT(Guid orderId)
+        {
+            using (var scope = serviceScopeFactory.CreateScope())
+            {
+                var order = await _orderRepository.Retrieve(orderId);
+                var hub = scope.ServiceProvider.GetRequiredService<IoTHub>();
+
+                await hub.SendMessageToGroup(order.OrganizationId, order);
+            }
         }
     }
 }

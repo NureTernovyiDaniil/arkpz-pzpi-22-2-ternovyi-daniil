@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
 using System;
 using System.Threading.Tasks;
 
@@ -19,9 +20,10 @@ namespace ChefMate_backend.Hubs
             await Clients.Group(organizationId.ToString()).SendAsync("ReceiveMessage", new { Text = $"{Context.ConnectionId} has joined the group {organizationId}." });
         }
 
-        public async Task SendMessageToGroup(Guid organizationId, string message)
+        public async Task SendMessageToGroup(Guid organizationId, object model)
         {
-            await Clients.Group(organizationId.ToString()).SendAsync("ReceiveMessage", message);
+            var serializedValue = JsonConvert.SerializeObject(model, Formatting.Indented, new JsonSerializerSettings() { ReferenceLoopHandling = ReferenceLoopHandling.Ignore });
+            await Clients.Group(organizationId.ToString()).SendAsync("ReceiveModel", serializedValue);
         }
     }
 }

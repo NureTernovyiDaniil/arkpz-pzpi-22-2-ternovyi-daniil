@@ -1,5 +1,8 @@
-﻿using Microsoft.AspNetCore.SignalR.Client;
+﻿using System.Text.Json;
+using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+using JsonSerializer = Newtonsoft.Json.JsonSerializer;
 
 namespace IoTClientApp.Services
 {
@@ -23,9 +26,14 @@ namespace IoTClientApp.Services
 
             _hubConnection.On<string>("ReceiveMessage", message =>
             {
-                Console.WriteLine("Received from SignalR: " + message);
+                Console.WriteLine("Received from SignalR: \n" + $"{JsonConvert.SerializeObject(message)}");
             });
 
+            _hubConnection.On<string>("ReceiveModel", model =>
+            {
+                //var json = JsonConvert.SerializeObject(model, Formatting.Indented);
+                Console.WriteLine(model);
+            });
         }
 
         private async Task Connect(Guid clientGuid)
@@ -40,18 +48,6 @@ namespace IoTClientApp.Services
             catch (Exception ex)
             {
                 Console.WriteLine("Error connecting to SignalR: " + ex.Message);
-            }
-        }
-
-        public async Task SendMessageToIoTClient(Guid clientGuid, string message)
-        {
-            try
-            {
-                await _hubConnection.InvokeAsync("SendMessageToClient", clientGuid, message);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("Error sending message: " + ex.Message);
             }
         }
     }

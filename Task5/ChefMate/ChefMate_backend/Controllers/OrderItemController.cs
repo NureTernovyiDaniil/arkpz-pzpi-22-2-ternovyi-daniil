@@ -29,6 +29,8 @@ namespace ChefMate_backend.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var orderItem = await _orderItemRepository.Retrieve(id);
+
+            await _ordersService.SendToIoT(orderItem.OrderId);
             return Ok(orderItem);
         }
 
