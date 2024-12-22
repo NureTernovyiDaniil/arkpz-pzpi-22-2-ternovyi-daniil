@@ -73,7 +73,9 @@ namespace ChefMate_backend.Repositories
 
         public async Task<bool> IsExistInOrganization(Guid workZoneId, Guid organizationId)
         {
-            var result = _context.WorkZones.Where(x=>x.Id == workZoneId && x.OrganizationId == organizationId).FirstOrDefaultAsync();
+            var result = _context.WorkZones
+                .Where(x=>x.Id == workZoneId && x.OrganizationId == organizationId)
+                .FirstOrDefaultAsync();
 
             return result != null;
         }

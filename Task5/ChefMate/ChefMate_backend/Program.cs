@@ -72,6 +72,7 @@ builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+builder.Services.AddScoped<IWorkZoneRepository, WorkZoneRepository>();
 builder.Services.AddScoped<OrdersService>();
 builder.Services.AddScoped<ReportBuilderService>();
 builder.Services.AddScoped<ReportService>();
@@ -144,7 +145,8 @@ using (var scope = app.Services.CreateScope())
             new IdentityRole<Guid> { Name = "Superadmin" },
             new IdentityRole<Guid> { Name = "Admin" },
             new IdentityRole<Guid> { Name = "Customer" },
-            new IdentityRole<Guid> { Name = "Waiter" }
+            new IdentityRole<Guid> { Name = "Waiter" },
+            new IdentityRole<Guid> { Name = "IoTDevice" }
         };
 
         foreach (var role in roles)

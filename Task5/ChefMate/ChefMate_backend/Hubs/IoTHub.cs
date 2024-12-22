@@ -19,7 +19,7 @@ namespace ChefMate_backend.Hubs
         [Authorize(Roles = "IoTDevice")]
         public async Task JoinGroup(Guid workZoneId)
         {
-            var organizationClaim = Context.User?.Claims.FirstOrDefault(c => c.Type == "OrganizationId");
+            var organizationClaim = Context.User?.Claims.FirstOrDefault(c => c.Type == "Organization");
 
             if (organizationClaim == null)
             {

@@ -1,9 +1,13 @@
 {
     "SignalR": {
         "HubBaseUrl": "https://localhost:7051/hubs",
-        "IoTClientGuid": "b80894e8-c151-4966-be2d-08dd221960f9"
+        "IoTClientGuid": "a452ff93-2687-4427-dd3f-08dd22a14a93"
     },
     "API": {
         "ApiBaseUrl": "https://localhost:7051/api"
+    },
+    "Auth": {
+        "Email": "device@gmail.com",
+        "Password": "device123"
     }
 }
