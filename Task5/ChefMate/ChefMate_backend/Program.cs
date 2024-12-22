@@ -188,7 +188,7 @@ app.UseAuthorization();
 
 app.UseEndpoints(endpoints =>
 {
-    endpoints.MapHub<IoTHub>("/api/hubs/IoT");
+    endpoints.MapHub<IoTHub>("/hubs/IoT");
     endpoints.MapControllers();
 });
 
