@@ -32,7 +32,7 @@ namespace ChefMate_backend.Controllers
                 return BadRequest(ModelState);
             }
 
-            if(request.OrganizationId == null && request.Role != "Superadmin")
+            if(request.OrganizationId == null && request.Role != "Superadmin" && request.Role != "User")
             {
                 return BadRequest("For each users that aren`t superadmins OrganizationId is required");
             }

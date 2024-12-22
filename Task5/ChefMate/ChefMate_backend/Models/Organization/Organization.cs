@@ -11,5 +11,6 @@ namespace ChefMate_backend.Models
         public string Name { get; set; }
         public string Description { get; set; }
         public virtual ICollection<Menu> Menus { get; set; }
+        public virtual ICollection<WorkZone> WorkZones { get; set; }
     }
 }

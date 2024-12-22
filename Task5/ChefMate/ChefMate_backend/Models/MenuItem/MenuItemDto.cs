@@ -1,4 +1,6 @@
-﻿namespace ChefMate_backend.Models
+﻿using ChefMate_backend.Enums;
+
+namespace ChefMate_backend.Models
 {
     public class MenuItemDto
     {
@@ -9,6 +11,8 @@
         public string? ImageUrl { get; set; }
         public bool IsAvailable { get; set; }
         public int TimeForCooking { get; set; }
+        public Guid WorkZoneId { get; set; }
+        public MenuItemCategory Category { get; set; }
         public Guid MenuId { get; set; }
     }
 }

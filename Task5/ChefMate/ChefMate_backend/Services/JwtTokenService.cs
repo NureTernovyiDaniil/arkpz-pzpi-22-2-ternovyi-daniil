@@ -35,6 +35,11 @@ namespace ChefMate_backend.Services
                 roles.Select(role => new Claim("Role", role)).FirstOrDefault()
             };
 
+            if(roles.FirstOrDefault(x=>x != "Superadmin" || x != "User") != null)
+            {
+                claims.Add(new Claim("Organization", user.OrganizationId.ToString()));
+            }
+
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_jwtSettings.Secret));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
