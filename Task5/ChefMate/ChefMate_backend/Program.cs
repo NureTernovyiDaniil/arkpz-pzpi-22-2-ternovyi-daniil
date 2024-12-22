@@ -1,5 +1,6 @@
 using AutoMapper;
 using ChefMate_backend;
+using ChefMate_backend.Hubs;
 using ChefMate_backend.Models;
 using ChefMate_backend.Repositories;
 using ChefMate_backend.Services;
@@ -74,6 +75,9 @@ builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
 builder.Services.AddScoped<OrdersService>();
 builder.Services.AddScoped<ReportBuilderService>();
 builder.Services.AddScoped<ReportService>();
+
+builder.Services.AddSingleton<IoTHub>();
+builder.Services.AddSignalR();
 
 builder.Services.AddControllers()
 .AddJsonOptions(options =>
@@ -181,6 +185,12 @@ app.UseRouting();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapHub<IoTHub>("/api/hubs/IoT");
+    endpoints.MapControllers();
+});
 
 app.MapControllerRoute(
     name: "default",
