@@ -10,19 +10,10 @@ namespace ChefMate_backend.Controllers
     public class OrderItemController : ControllerBase
     {
         private readonly IOrderItemRepository _orderItemRepository;
-        private readonly OrdersService _ordersService;
 
-        public OrderItemController(IOrderItemRepository orderItemRepository, OrdersService ordersService)
+        public OrderItemController(IOrderItemRepository orderItemRepository)
         {
             _orderItemRepository = orderItemRepository;
-            _ordersService = ordersService;
-        }
-
-        [HttpGet("TEST")]
-        public async Task<IActionResult> TESTIOT()
-        {
-            _ordersService.HandleOrder(new Guid("A8C44D23-CDF4-402B-8042-08DD23AEEF60"));
-            return Ok();
         }
 
         [HttpGet]
@@ -36,8 +27,6 @@ namespace ChefMate_backend.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var orderItem = await _orderItemRepository.Retrieve(id);
-
-            await _ordersService.SendToIoT(orderItem.OrderId);
             return Ok(orderItem);
         }
 
@@ -47,7 +36,6 @@ namespace ChefMate_backend.Controllers
             var result = await _orderItemRepository.Insert(orderItem);
             if(result)
             {
-                await _ordersService.HandleOrder(orderItem.OrderId);
                 return Ok(result);
             }
 
@@ -60,8 +48,6 @@ namespace ChefMate_backend.Controllers
             var result = await _orderItemRepository.Insert(orderItem);
             if (result)
             {
-                var orderId = orderItem.FirstOrDefault().OrderId;
-                await _ordersService.HandleOrder(orderId);
                 return Ok(result);
             }
 

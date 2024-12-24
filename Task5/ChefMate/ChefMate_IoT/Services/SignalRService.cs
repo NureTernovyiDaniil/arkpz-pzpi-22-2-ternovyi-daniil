@@ -36,7 +36,10 @@ namespace IoTClientApp.Services
                 Console.WriteLine("Received from SignalR: \n" + message);
             });
 
-            _hubConnection.On<string>("ReceiveModel", Console.WriteLine);
+            _hubConnection.On<string>("ReceiveModel", message => 
+            {
+                Console.WriteLine(message); 
+            });
         }
 
         private async Task RequestJwtToken()

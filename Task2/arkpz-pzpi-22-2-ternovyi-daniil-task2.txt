@@ -1,0 +1,1154 @@
+﻿Харківський національний університет радіоелектроніки
+Факультет комп'ютерних наук
+Кафедра програмної інженерії
+ЗВІТ
+з дисципліни "Аналіз та рефакторинг коду"
+до лабораторної роботи №2
+на тему: "РОЗРОБКА БАЗИ ДАНИХ ДЛЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ ТА ПРИКЛАДНОГО ПРОГРАМНОГО ІНТЕРФЕЙСУ (API)"
+
+
+
+
+
+Виконав ст. гр. ПЗПІ-22-2 
+Терновий Данііл Павлович 
+
+Ст. викл. кафедри ПІ 
+Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+Харків 2024
+1 МЕТА РОБОТИ
+      
+      Метою  роботи  є  розробити  базу  даних  для  серверної  частини  та прикладного  програмного  інтерфейсу  для  програмної  системи  оренди малих складів.
+      
+1 ХІД РОБОТИ
+
+      Робота над лабораторним проектом розпочалася зі створення детального проекту системи. Першим етапом стало проектування UML-діаграми прецедентів для системи оренди складів, яка охоплює основні та спеціалізовані функції. Для забезпечення чіткості та деталізації, діаграма була розбита на кілька частин, що наведені у Додатку А.
+      На другому етапі було створено ER-діаграму, яка демонструє зв’язки між сутностями системи та слугує основою для моделювання даних. Побудована ER-діаграма представлена у Додатку Б, а на її основі розроблена структура бази даних, відображена у вигляді діаграми в Додатку В.
+      Наступним кроком стала розробка API для забезпечення взаємодії між серверною частиною системи та клієнтами. Для документування API підготовлено Swagger специфікацію у Додатку Г, яка містить детальний опис усіх ендпоінтів, їх параметрів, типів даних та очікуваних відповідей. Це спрощує інтеграцію з клієнтськими додатками.
+      Приклади коду серверної частини, що демонструють ключові аспекти реалізації системи, наведені у Додатку Д. Повний вихідний код проекту завантажено на платформу GitHub.
+      Під час розробки API були прийняті інженерні рішення для забезпечення стабільності та гнучкості системи.
+      Серверна частина побудована на базі ASP.NET з використанням Entity Framework. Кожен компонент системи є незалежним, що включає контролер та сервіс для реалізації конкретних функцій. Це дозволяє спрощено масштабувати систему, імпортувати необхідні моделі для взаємодії з базою даних та експортувати сервіси для використання в інших модулях.
+      Для роботи з базою даних використано Entity Framework в поєднанні з MSSQL, що забезпечує зручне управління даними, ефективність внесення змін та оптимізацію запитів.
+      Системою управління базами даних обрано MSSQL, розміщену в хмарному середовищі. Це забезпечує віддалене зберігання даних, підвищуючи продуктивність проекту та зручність його використання.
+
+3   ВИСНОВКИ
+
+      Під час виконання лабораторної роботи вдалося успішно досягти основної мети — розробити серверну частину та прикладний програмний інтерфейс (API) для системи оренди складів, яка відповідає сучасним стандартам якості та функціональності. Виконання послідовних етапів, від створення UML-діаграми прецедентів до розробки та документування API, забезпечило структурованість і ефективність процесу розробки.
+      
+
+ДОДАТОК А
+UML – діаграма прецедентів
+
+Рисунок А.1 – UML – діаграма прецедентів
+
+
+
+ДОДАТОК Б
+ER – діаграма бази даних
+
+Рисунок Б.1 – ER-діаграма бази даних
+
+
+ДОДАТОК В
+Діаграма структури бази даних
+
+Рисунок В.1 – Діаграма структури бази даних
+
+
+ДОДАТОК Г
+Swagger специфікація API
+
+1 {
+2   "openapi": "3.0.1",
+3   "info": {
+4     "title": "ChefMate",
+5     "version": "v1"
+6   },
+7   "paths": {
+8     "/api/Menu": {
+9       "get": {
+10         "tags": [
+11           "Menu"
+12         ],
+13         "responses": {
+14           "200": {
+15             "description": "OK"
+16           }
+17         }
+18       },
+19       "post": {
+20         "tags": [
+21           "Menu"
+22         ],
+23         "requestBody": {
+24           "content": {
+25             "application/json": {
+26               "schema": {
+27                 "$ref": "#/components/schemas/MenuDto"
+28               }
+29             },
+30             "text/json": {
+31               "schema": {
+32                 "$ref": "#/components/schemas/MenuDto"
+33               }
+34             },
+35             "application/*+json": {
+36               "schema": {
+37                 "$ref": "#/components/schemas/MenuDto"
+38               }
+39             }
+40           }
+41         },
+42         "responses": {
+43           "200": {
+44             "description": "OK"
+45           }
+46         }
+47       },
+48       "delete": {
+49         "tags": [
+50           "Menu"
+51         ],
+52         "requestBody": {
+53           "content": {
+54             "application/json": {
+55               "schema": {
+56                 "$ref": "#/components/schemas/MenuDto"
+57               }
+58             },
+59             "text/json": {
+60               "schema": {
+61                 "$ref": "#/components/schemas/MenuDto"
+62               }
+63             },
+64             "application/*+json": {
+65               "schema": {
+66                 "$ref": "#/components/schemas/MenuDto"
+67               }
+68             }
+69           }
+70         },
+71         "responses": {
+72           "200": {
+73             "description": "OK"
+74           }
+75         }
+76       }
+77     },
+78     "/api/Menu/{id}": {
+79       "get": {
+80         "tags": [
+81           "Menu"
+82         ],
+83         "parameters": [
+84           {
+85             "name": "id",
+86             "in": "path",
+87             "required": true,
+88             "schema": {
+89               "type": "string",
+90               "format": "uuid"
+91             }
+92           }
+93         ],
+94         "responses": {
+95           "200": {
+96             "description": "OK"
+97           }
+98         }
+99       },
+100       "put": {
+101         "tags": [
+102           "Menu"
+103         ],
+104         "parameters": [
+105           {
+106             "name": "id",
+107             "in": "path",
+108             "required": true,
+109             "schema": {
+110               "type": "string",
+111               "format": "uuid"
+112             }
+113           }
+114         ],
+115         "requestBody": {
+116           "content": {
+117             "application/json": {
+118               "schema": {
+119                 "$ref": "#/components/schemas/MenuDto"
+120               }
+121             },
+122             "text/json": {
+123               "schema": {
+124                 "$ref": "#/components/schemas/MenuDto"
+125               }
+126             },
+127             "application/*+json": {
+128               "schema": {
+129                 "$ref": "#/components/schemas/MenuDto"
+130               }
+131             }
+132           }
+133         },
+134         "responses": {
+135           "200": {
+136             "description": "OK"
+137           }
+138         }
+139       },
+140       "delete": {
+141         "tags": [
+142           "Menu"
+143         ],
+144         "parameters": [
+145           {
+146             "name": "id",
+147             "in": "path",
+148             "required": true,
+149             "schema": {
+150               "type": "string",
+151               "format": "uuid"
+152             }
+153           }
+154         ],
+155         "responses": {
+156           "200": {
+157             "description": "OK"
+158           }
+159         }
+160       }
+161     },
+162     "/api/MenuItem": {
+163       "get": {
+164         "tags": [
+165           "MenuItem"
+166         ],
+167         "responses": {
+168           "200": {
+169             "description": "OK"
+170           }
+171         }
+172       }
+173     },
+174     "/api/MenuItem/{id}": {
+175       "get": {
+176         "tags": [
+177           "MenuItem"
+178         ],
+179         "parameters": [
+180           {
+181             "name": "id",
+182             "in": "path",
+183             "required": true,
+184             "schema": {
+185               "type": "string",
+186               "format": "uuid"
+187             }
+188           }
+189         ],
+190         "responses": {
+191           "200": {
+192             "description": "OK"
+193           }
+194         }
+195       }
+196     },
+197     "/api/MenuItem/post": {
+198       "post": {
+199         "tags": [
+200           "MenuItem"
+201         ],
+202         "requestBody": {
+203           "content": {
+204             "application/json": {
+205               "schema": {
+206                 "$ref": "#/components/schemas/MenuItemDto"
+207               }
+208             },
+209             "text/json": {
+210               "schema": {
+211                 "$ref": "#/components/schemas/MenuItemDto"
+212               }
+213             },
+214             "application/*+json": {
+215               "schema": {
+216                 "$ref": "#/components/schemas/MenuItemDto"
+217               }
+218             }
+219           }
+220         },
+221         "responses": {
+222           "200": {
+223             "description": "OK"
+224           }
+225         }
+226       }
+227     },
+228     "/api/MenuItem/update": {
+229       "put": {
+230         "tags": [
+231           "MenuItem"
+232         ],
+233         "requestBody": {
+234           "content": {
+235             "application/json": {
+236               "schema": {
+237                 "$ref": "#/components/schemas/MenuItemDto"
+238               }
+239             },
+240             "text/json": {
+241               "schema": {
+242                 "$ref": "#/components/schemas/MenuItemDto"
+243               }
+244             },
+245             "application/*+json": {
+246               "schema": {
+247                 "$ref": "#/components/schemas/MenuItemDto"
+248               }
+249             }
+250           }
+251         },
+252         "responses": {
+253           "200": {
+254             "description": "OK"
+255           }
+256         }
+257       }
+258     },
+259     "/api/MenuItem/delete/{id}": {
+260       "delete": {
+261         "tags": [
+262           "MenuItem"
+263         ],
+264         "parameters": [
+265           {
+266             "name": "id",
+267             "in": "path",
+268             "required": true,
+269             "schema": {
+270               "type": "string",
+271               "format": "uuid"
+272             }
+273           }
+274         ],
+275         "responses": {
+276           "200": {
+277             "description": "OK"
+278           }
+279         }
+280       }
+281     },
+282     "/api/MenuItem/delete": {
+283       "delete": {
+284         "tags": [
+285           "MenuItem"
+286         ],
+287         "requestBody": {
+288           "content": {
+289             "application/json": {
+290               "schema": {
+291                 "$ref": "#/components/schemas/MenuItemDto"
+292               }
+293             },
+294             "text/json": {
+295               "schema": {
+296                 "$ref": "#/components/schemas/MenuItemDto"
+297               }
+298             },
+299             "application/*+json": {
+300               "schema": {
+301                 "$ref": "#/components/schemas/MenuItemDto"
+302               }
+303             }
+304           }
+305         },
+306         "responses": {
+307           "200": {
+308             "description": "OK"
+309           }
+310         }
+311       }
+312     },
+313     "/api/Order": {
+314       "get": {
+315         "tags": [
+316           "Order"
+317         ],
+318         "responses": {
+319           "200": {
+320             "description": "OK"
+321           }
+322         }
+323       }
+324     },
+325     "/api/Order/{id}": {
+326       "get": {
+327         "tags": [
+328           "Order"
+329         ],
+330         "parameters": [
+331           {
+332             "name": "id",
+333             "in": "path",
+334             "required": true,
+335             "schema": {
+336               "type": "string",
+337               "format": "uuid"
+338             }
+339           }
+340         ],
+341         "responses": {
+342           "200": {
+343             "description": "OK"
+344           }
+345         }
+346       }
+347     },
+348     "/api/Order/post": {
+349       "post": {
+350         "tags": [
+351           "Order"
+352         ],
+353         "requestBody": {
+354           "content": {
+355             "application/json": {
+356               "schema": {
+357                 "$ref": "#/components/schemas/OrderDto"
+358               }
+359             },
+360             "text/json": {
+361               "schema": {
+362                 "$ref": "#/components/schemas/OrderDto"
+363               }
+364             },
+365             "application/*+json": {
+366               "schema": {
+367                 "$ref": "#/components/schemas/OrderDto"
+368               }
+369             }
+370           }
+371         },
+372         "responses": {
+373           "200": {
+374             "description": "OK"
+375           }
+376         }
+377       }
+378     },
+379     "/api/Order/update": {
+380       "put": {
+381         "tags": [
+382           "Order"
+383         ],
+384         "requestBody": {
+385           "content": {
+386             "application/json": {
+387               "schema": {
+388                 "$ref": "#/components/schemas/OrderDto"
+389               }
+390             },
+391             "text/json": {
+392               "schema": {
+393                 "$ref": "#/components/schemas/OrderDto"
+394               }
+395             },
+396             "application/*+json": {
+397               "schema": {
+398                 "$ref": "#/components/schemas/OrderDto"
+399               }
+400             }
+401           }
+402         },
+403         "responses": {
+404           "200": {
+405             "description": "OK"
+406           }
+407         }
+408       }
+409     },
+410     "/api/Order/delete/{id}": {
+411       "delete": {
+412         "tags": [
+413           "Order"
+414         ],
+415         "parameters": [
+416           {
+417             "name": "id",
+418             "in": "path",
+419             "required": true,
+420             "schema": {
+421               "type": "string",
+422               "format": "uuid"
+423             }
+424           }
+425         ],
+426         "responses": {
+427           "200": {
+428             "description": "OK"
+429           }
+430         }
+431       }
+432     },
+433     "/api/Order/delete": {
+434       "delete": {
+435         "tags": [
+436           "Order"
+437         ],
+438         "requestBody": {
+439           "content": {
+440             "application/json": {
+441               "schema": {
+442                 "$ref": "#/components/schemas/OrderDto"
+443               }
+444             },
+445             "text/json": {
+446               "schema": {
+447                 "$ref": "#/components/schemas/OrderDto"
+448               }
+449             },
+450             "application/*+json": {
+451               "schema": {
+452                 "$ref": "#/components/schemas/OrderDto"
+453               }
+454             }
+455           }
+456         },
+457         "responses": {
+458           "200": {
+459             "description": "OK"
+460           }
+461         }
+462       }
+463     },
+464     "/api/OrderItem": {
+465       "get": {
+466         "tags": [
+467           "OrderItem"
+468         ],
+469         "responses": {
+470           "200": {
+471             "description": "OK"
+472           }
+473         }
+474       }
+475     },
+476     "/api/OrderItem/{id}": {
+477       "get": {
+478         "tags": [
+479           "OrderItem"
+480         ],
+481         "parameters": [
+482           {
+483             "name": "id",
+484             "in": "path",
+485             "required": true,
+486             "schema": {
+487               "type": "string",
+488               "format": "uuid"
+489             }
+490           }
+491         ],
+492         "responses": {
+493           "200": {
+494             "description": "OK"
+495           }
+496         }
+497       }
+498     },
+499     "/api/OrderItem/post": {
+500       "post": {
+501         "tags": [
+502           "OrderItem"
+503         ],
+504         "requestBody": {
+505           "content": {
+506             "application/json": {
+507               "schema": {
+508                 "$ref": "#/components/schemas/OrderItemDto"
+509               }
+510             },
+511             "text/json": {
+512               "schema": {
+513                 "$ref": "#/components/schemas/OrderItemDto"
+514               }
+515             },
+516             "application/*+json": {
+517               "schema": {
+518                 "$ref": "#/components/schemas/OrderItemDto"
+519               }
+520             }
+521           }
+522         },
+523         "responses": {
+524           "200": {
+525             "description": "OK"
+526           }
+527         }
+528       }
+529     },
+530     "/api/OrderItem/update": {
+531       "put": {
+532         "tags": [
+533           "OrderItem"
+534         ],
+535         "requestBody": {
+536           "content": {
+537             "application/json": {
+538               "schema": {
+539                 "$ref": "#/components/schemas/OrderItemDto"
+540               }
+541             },
+542             "text/json": {
+543               "schema": {
+544                 "$ref": "#/components/schemas/OrderItemDto"
+545               }
+546             },
+547             "application/*+json": {
+548               "schema": {
+549                 "$ref": "#/components/schemas/OrderItemDto"
+550               }
+551             }
+552           }
+553         },
+554         "responses": {
+555           "200": {
+556             "description": "OK"
+557           }
+558         }
+559       }
+560     },
+561     "/api/OrderItem/delete/{id}": {
+562       "delete": {
+563         "tags": [
+564           "OrderItem"
+565         ],
+566         "parameters": [
+567           {
+568             "name": "id",
+569             "in": "path",
+570             "required": true,
+571             "schema": {
+572               "type": "string",
+573               "format": "uuid"
+574             }
+575           }
+576         ],
+577         "responses": {
+578           "200": {
+579             "description": "OK"
+580           }
+581         }
+582       }
+583     },
+584     "/api/OrderItem/delete": {
+585       "delete": {
+586         "tags": [
+587           "OrderItem"
+588         ],
+589         "requestBody": {
+590           "content": {
+591             "application/json": {
+592               "schema": {
+593                 "$ref": "#/components/schemas/OrderItemDto"
+594               }
+595             },
+596             "text/json": {
+597               "schema": {
+598                 "$ref": "#/components/schemas/OrderItemDto"
+599               }
+600             },
+601             "application/*+json": {
+602               "schema": {
+603                 "$ref": "#/components/schemas/OrderItemDto"
+604               }
+605             }
+606           }
+607         },
+608         "responses": {
+609           "200": {
+610             "description": "OK"
+611           }
+612         }
+613       }
+614     },
+615     "/api/Review": {
+616       "get": {
+617         "tags": [
+618           "Review"
+619         ],
+620         "responses": {
+621           "200": {
+622             "description": "OK"
+623           }
+624         }
+625       }
+626     },
+627     "/api/Review/{id}": {
+628       "get": {
+629         "tags": [
+630           "Review"
+631         ],
+632         "parameters": [
+633           {
+634             "name": "id",
+635             "in": "path",
+636             "required": true,
+637             "schema": {
+638               "type": "string",
+639               "format": "uuid"
+640             }
+641           }
+642         ],
+643         "responses": {
+644           "200": {
+645             "description": "OK"
+646           }
+647         }
+648       }
+649     },
+650     "/api/Review/post": {
+651       "post": {
+652         "tags": [
+653           "Review"
+654         ],
+655         "requestBody": {
+656           "content": {
+657             "application/json": {
+658               "schema": {
+659                 "$ref": "#/components/schemas/ReviewDto"
+660               }
+661             },
+662             "text/json": {
+663               "schema": {
+664                 "$ref": "#/components/schemas/ReviewDto"
+665               }
+666             },
+667             "application/*+json": {
+668               "schema": {
+669                 "$ref": "#/components/schemas/ReviewDto"
+670               }
+671             }
+672           }
+673         },
+674         "responses": {
+675           "200": {
+676             "description": "OK"
+677           }
+678         }
+679       }
+680     },
+681     "/api/Review/update": {
+682       "put": {
+683         "tags": [
+684           "Review"
+685         ],
+686         "requestBody": {
+687           "content": {
+688             "application/json": {
+689               "schema": {
+690                 "$ref": "#/components/schemas/ReviewDto"
+691               }
+692             },
+693             "text/json": {
+694               "schema": {
+695                 "$ref": "#/components/schemas/ReviewDto"
+696               }
+697             },
+698             "application/*+json": {
+699               "schema": {
+700                 "$ref": "#/components/schemas/ReviewDto"
+701               }
+702             }
+703           }
+704         },
+705         "responses": {
+706           "200": {
+707             "description": "OK"
+708           }
+709         }
+710       }
+711     },
+712     "/api/Review/delete/{id}": {
+713       "delete": {
+714         "tags": [
+715           "Review"
+716         ],
+717         "parameters": [
+718           {
+719             "name": "id",
+720             "in": "path",
+721             "required": true,
+722             "schema": {
+723               "type": "string",
+724               "format": "uuid"
+725             }
+726           }
+727         ],
+728         "responses": {
+729           "200": {
+730             "description": "OK"
+731           }
+732         }
+733       }
+734     },
+735     "/api/Review/delete": {
+736       "delete": {
+737         "tags": [
+738           "Review"
+739         ],
+740         "requestBody": {
+741           "content": {
+742             "application/json": {
+743               "schema": {
+744                 "$ref": "#/components/schemas/ReviewDto"
+745               }
+746             },
+747             "text/json": {
+748               "schema": {
+749                 "$ref": "#/components/schemas/ReviewDto"
+750               }
+751             },
+752             "application/*+json": {
+753               "schema": {
+754                 "$ref": "#/components/schemas/ReviewDto"
+755               }
+756             }
+757           }
+758         },
+759         "responses": {
+760           "200": {
+761             "description": "OK"
+762           }
+763         }
+764       }
+765     }
+766   },
+767   "components": {
+768     "schemas": {
+769       "KitchenTaskStatus": {
+770         "enum": [
+771           0,
+772           1,
+773           2,
+774           3
+775         ],
+776         "type": "integer",
+777         "format": "int32"
+778       },
+779       "LoginRequest": {
+780         "type": "object",
+781         "properties": {
+782           "email": {
+783             "type": "string",
+784             "nullable": true
+785           },
+786           "password": {
+787             "type": "string",
+788             "nullable": true
+789           }
+790         },
+791         "additionalProperties": false
+792       },
+793       "MenuDto": {
+794         "type": "object",
+795         "properties": {
+796           "id": {
+797             "type": "string",
+798             "format": "uuid",
+799             "nullable": true
+800           },
+801           "ownerId": {
+802             "type": "string",
+803             "nullable": true
+804           },
+805           "name": {
+806             "type": "string",
+807             "nullable": true
+808           }
+809         },
+810         "additionalProperties": false
+811       },
+812       "MenuItemDto": {
+813         "type": "object",
+814         "properties": {
+815           "id": {
+816             "type": "string",
+817             "format": "uuid",
+818             "nullable": true
+819           },
+820           "name": {
+821             "type": "string",
+822             "nullable": true
+823           },
+824           "description": {
+825             "type": "string",
+826             "nullable": true
+827           },
+828           "price": {
+829             "type": "number",
+830             "format": "double"
+831           },
+832           "imageUrl": {
+833             "type": "string",
+834             "nullable": true
+835           },
+836           "isAvailable": {
+837             "type": "boolean"
+838           },
+839           "menuId": {
+840             "type": "string",
+841             "format": "uuid"
+842           }
+843         },
+844         "additionalProperties": false
+845       },
+846       "OrderDto": {
+847         "type": "object",
+848         "properties": {
+849           "id": {
+850             "type": "string",
+851             "format": "uuid"
+852           },
+853           "customerId": {
+854             "type": "string",
+855             "nullable": true
+856           },
+857           "waiterId": {
+858             "type": "string",
+859             "nullable": true
+860           },
+861           "chefId": {
+862             "type": "string",
+863             "nullable": true
+864           },
+865           "orderDate": {
+866             "type": "string",
+867             "format": "date-time"
+868           },
+869           "status": {
+870             "$ref": "#/components/schemas/OrderStatus"
+871           },
+872           "totalAmount": {
+873             "type": "number",
+874             "format": "double"
+875           }
+876         },
+877         "additionalProperties": false
+878       },
+879       "OrderItemDto": {
+880         "type": "object",
+881         "properties": {
+882           "id": {
+883             "type": "string",
+884             "format": "uuid"
+885           },
+886           "orderId": {
+887             "type": "string",
+888             "format": "uuid"
+889           },
+890           "menuItemId": {
+891             "type": "string",
+892             "format": "uuid"
+893           },
+894           "priority": {
+895             "type": "integer",
+896             "format": "int32"
+897           },
+898           "status": {
+899             "$ref": "#/components/schemas/KitchenTaskStatus"
+900           },
+901           "quantity": {
+902             "type": "integer",
+903             "format": "int32"
+904           },
+905           "price": {
+906             "type": "number",
+907             "format": "double"
+908           }
+909         },
+910         "additionalProperties": false
+911       },
+912       "OrderStatus": {
+913         "type": "integer",
+914         "format": "int32"
+915       },
+916       "RegisterRequest": {
+917         "type": "object",
+918         "properties": {
+919           "email": {
+920             "type": "string",
+921             "nullable": true
+922           },
+923           "password": {
+924             "type": "string",
+925             "nullable": true
+926           },
+927           "role": {
+928             "type": "string",
+929             "nullable": true
+930           }
+931         },
+932         "additionalProperties": false
+933       },
+934       "ReviewDto": {
+935         "type": "object",
+936         "properties": {
+937           "id": {
+938             "type": "string",
+939             "format": "uuid"
+940           },
+941           "customerId": {
+942             "type": "string",
+943             "nullable": true
+944           },
+945           "orderId": {
+946             "type": "string",
+947             "format": "uuid"
+948           },
+949           "feedback": {
+950             "type": "string",
+951             "nullable": true
+952           },
+953           "rating": {
+954             "type": "integer",
+955             "format": "int32"
+956           },
+957           "date": {
+958             "type": "string",
+959             "format": "date-time"
+960           }
+961         },
+962         "additionalProperties": false
+963       }
+964     },
+965     "securitySchemes": {
+966       "Bearer": {
+967         "type": "http",
+968         "description": "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\"",
+969         "scheme": "bearer",
+970         "bearerFormat": "JWT"
+971       }
+972     }
+973   },
+974   "security": [
+975     {
+976       "Bearer": [ ]
+977     }
+978   ]
+979 }
+
+ДОДАТОК Д
+Приклад програмного коду
+1 using AutoMapper;
+2 using ChefMate_backend;
+3 using ChefMate_backend.Models;
+4 using ChefMate_backend.Repositories;
+5 using Microsoft.EntityFrameworkCore;
+6 using System.Text;
+7 
+8 var builder = WebApplication.CreateBuilder(args);
+9 
+10 builder.Services.AddDbContext<ApplicationDbContext>(options =>
+11     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+12 
+13 builder.Services.AddDbContext<IdentityContext>(options =>
+14     options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+15 
+16 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+17 builder.Services.AddSingleton(mapper);
+18 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+19 
+20 builder.Services.AddControllersWithViews();
+21 
+22 builder.Services.ConfigureApplicationCookie(options =>
+23 {
+24     options.ExpireTimeSpan = TimeSpan.FromDays(14);
+25     options.SlidingExpiration = true;
+26 });
+27 
+28 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+29 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+30 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+31 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+32 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+33 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+34 
+35 builder.Services.AddControllers()
+36 .AddJsonOptions(options =>
+37 {
+38     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+39 });
+40 
+41 builder.Services.AddSwaggerGen(options =>
+42 {
+43     options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChefMate", Version = "v1" });
+44 });
+45 
+46 var app = builder.Build();
+47 
+48 using (var scope = app.Services.CreateScope())
+49 {
+50     var services = scope.ServiceProvider;
+51 
+52     try
+53     {
+54         var context = services.GetRequiredService<ApplicationDbContext>();
+55         context.Database.Migrate();
+56 
+57         var identityContext = services.GetRequiredService<IdentityContext>();
+58         identityContext.Database.Migrate();
+59     }
+60     catch (Exception ex)
+61     {
+62         var logger = services.GetRequiredService<ILogger<Program>>();
+63         logger.LogError(ex, "Error occurred while migrating the database");
+64     }
+65 }
+66 
+67 if (app.Environment.IsDevelopment())
+68 {
+69     app.UseDeveloperExceptionPage();
+70     app.UseSwagger();
+71     app.UseSwaggerUI(c =>
+72     {
+73         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ChefMate V1");
+74         c.RoutePrefix = "swagger";
+75     });
+76 }
+77 else
+78 {
+79     app.UseExceptionHandler("/Home/Error");
+80     app.UseHsts();
+81 }
+82 
+83 app.UseHttpsRedirection();
+84 app.UseStaticFiles();
+85 
+86 app.UseRouting();
+87 
+88 app.UseAuthentication();
+89 app.UseAuthorization();
+90 
+91 app.MapControllerRoute(
+92     name: "default",
+93     pattern: "{controller=Home}/{action=Index}/{id?}");
+94 
+95 app.Run();
+
+ДОДАТОК Е
+Відео-посилання на Youtube 
+https://youtu.be/AWRQZ0rmSO8
+2
+
+
+[Введіть текст тут]
+
+

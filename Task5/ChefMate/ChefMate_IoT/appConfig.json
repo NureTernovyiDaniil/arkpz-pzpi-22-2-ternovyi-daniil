@@ -1,7 +1,7 @@
 {
     "SignalR": {
         "HubBaseUrl": "https://localhost:7051/hubs",
-        "IoTClientGuid": "a452ff93-2687-4427-dd3f-08dd22a14a93"
+        "IoTClientGuid": "01aebc7f-7790-4b83-e3c6-08dd23ae1d85"
     },
     "API": {
         "ApiBaseUrl": "https://localhost:7051/api"

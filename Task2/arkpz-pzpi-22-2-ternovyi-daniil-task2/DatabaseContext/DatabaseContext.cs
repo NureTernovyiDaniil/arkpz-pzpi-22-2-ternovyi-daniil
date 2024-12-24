@@ -12,7 +12,7 @@ public class ApplicationDbContext : DbContext
     public DbSet<OrderItem> OrderItems { get; set; }
     public DbSet<Review> Reviews { get; set; }
     public DbSet<Organization> Organizations { get; set; }
-    public DbSet<WorkZone> WorkZones { get; set; }
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
@@ -45,17 +45,5 @@ public class ApplicationDbContext : DbContext
             .WithMany(o => o.Menus)
             .HasForeignKey(fk => fk.OrganizationId)
             .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<WorkZone>()
-            .HasMany(mi => mi.MenuItems)
-            .WithOne(wz => wz.WorkZone)
-            .HasForeignKey(mi => mi.WorkZoneId)
-            .OnDelete(DeleteBehavior.NoAction);
-
-        builder.Entity<Organization>()
-            .HasMany(wz => wz.WorkZones)
-            .WithOne(org => org.Organization)
-            .HasForeignKey(fk => fk.OrganizationId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }
