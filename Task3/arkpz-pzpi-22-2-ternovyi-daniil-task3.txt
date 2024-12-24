@@ -1,0 +1,516 @@
+﻿Харківський національний університет радіоелектроніки
+Факультет комп'ютерних наук
+Кафедра програмної інженерії
+ЗВІТ
+з дисципліни "Аналіз та рефакторинг коду"
+до лабораторної роботи №3
+на тему: "РОЗРОБКА БІЗНЕС-ЛОГІКИ ТА ФУНКЦІЙ АДМІНІСТРУВАННЯ СЕРВЕРНОЇ ЧАСТИНИ ПРОГРАМНОЇ СИСТЕМИ"
+
+
+
+
+
+Виконав ст. гр. ПЗПІ-22-2 
+Терновий Данііл Павлович 
+
+Ст. викл. кафедри ПІ 
+Сокорчук Ігор Петрович
+
+
+
+
+
+
+
+
+Харків 2024
+1 МЕТА РОБОТИ
+     
+     Метою  роботи  є  розробка бізнес-логіки та функцій адміністрування серверної частини програмної системи.
+     
+1 ХІД РОБОТИ
+
+     Під час виконання лабораторної роботи, було розроблено ряд рішень для адміністрування програмного інтерфейсу та бази даних, збору та обробки даних.
+     В опис розроблених рішень входять:
+- Підключення базової авторизації, що дозволило впровадити базові моделі адміністрування користувачів системи;
+- Сегрегація бази даних адміністрування користувачів та використання різних підключень та контекстів бази даних;
+- Додано використання JwtToken-ів в заголовках авторизації під час запиту, що надало можливість ідентифікації користувача, що відправив запит;
+- Додано реєстрацію, визначено перелік ролей в системі та основні вимоги під час реєстрації, наприклад мінімальна довжина пароля;
+- Додано можливість авторизації в інтерфейсі SwaggerUI, що надало можливість відлагодження програмної системи з точки зору адміністрування;
+- Розмежено доступ до контроллерів по ролям;
+- Впроваджено базову бізнес-логіку оброблення замовлення;
+- Імплементовано контроллер, який надає можливість генерувати звіти. 
+
+     Основну функціональність адміністрування була впроваджена за допомогою за пакету Microsoft.AspNetCore.Identity. Це дозволило налаштувати гнучку логіку розподілення доступу користувачів до кінцевих точок програмного інтерфейсу. Код розробленого рішення надано в додатку В.
+     Розроблене програмне рішення включає в себе загальний звіт по прибутку з групуванням по дням неділі за певний період часу або певну дату. Також був імплементований фінансовий звіт з загальними метриками продаваємості, з уточненням по максимальним та мінімальним критеріям фінансової діяльності закладу. Також був розроблений звіт по доступності страв в меню. Код наведено в додатку В.
+     Також було імплементовано бізнес-логіку для оброблення замовлень клієнтів. Код наведено в додатку В.
+     
+3   ВИСНОВКИ
+
+     У результаті роботи було розроблено функціонал адміністрування серверної частини системи, що включає базову авторизацію, сегрегацію бази даних, використання JwtToken для ідентифікації та контроль доступу за ролями. Впроваджено бізнес-логіку розрахунку замовлень і генерації звітів, зокрема аналітичних і фінансових. Рішення забезпечує ефективне управління системою та можливість її подальшого розширення.
+
+ДОДАТОК А
+UML діаграма діяльності
+
+
+Рисунок А.1 – UML – діаграма діяльності
+
+
+
+
+Рисунок А.2 – UML – діаграма діяльності
+
+
+
+ДОДАТОК Б
+UML діаграма взаємодії
+
+
+Рисунок Б.1 – Оброблення замовлення 
+
+
+ДОДАТОК В
+Фрагмент програмного коду (математичних методів обробки даних) серверної частини
+
+1 using AutoMapper;
+2 using ChefMate_backend.Models;
+3 using ChefMate_backend.Repositories;
+4 
+5 namespace ChefMate_backend.Services
+6 {
+7     public class OrdersService
+8     {
+9         private readonly IOrderRepository _orderRepository;
+10         private readonly IOrderItemRepository _orderItemRepository;
+11         private readonly IMapper _mapper;
+12         private readonly IMenuItemRepository _menuItemRepository;
+13 
+14         public OrdersService(IOrderRepository orderRepository, IMapper mapper, 
+15             IMenuItemRepository menuItemRepository, IOrderItemRepository orderItemRepository)
+16         {
+17             _orderRepository = orderRepository;
+18             _mapper = mapper;
+19             _menuItemRepository = menuItemRepository;
+20             _orderItemRepository = orderItemRepository;
+21         }
+22 
+23         public async Task HandleOrder(Guid orderId)
+24         {
+25             var order = await _orderRepository.Retrieve(orderId);
+26             if (order == null)
+27             {
+28                 throw new KeyNotFoundException($"Order doesn`t exists");
+29             }
+30 
+31             var menuItemIds = order.OrderItems
+32                 .Select(x => x.MenuItemId)
+33                 .Distinct()
+34                 .ToList();
+35 
+36             var menuItems = await _menuItemRepository.Retrieve(menuItemIds);
+37             var menuItemsDict = menuItems.ToDictionary(m => m.Id, m => m.Price);
+38 
+39             foreach (var orderItem in order.OrderItems)
+40             {
+41                 if (menuItemsDict.TryGetValue(orderItem.MenuItem.Id, out var price))
+42                 {
+43                     orderItem.Price = price;
+44                     await _orderItemRepository.Update(_mapper.Map<OrderItemDto>(orderItem));
+45                 }
+46             }
+47 
+48             order.TotalAmount = order.OrderItems.Sum(x => x.Price * x.Quantity);
+49 
+50             var orderDto = _mapper.Map<OrderDto>(order);
+51             await _orderRepository.Update(orderDto);
+52         }
+53     }
+54 }
+55
+
+Фрагмент коду налаштування адміністрування сервісної частини
+
+1 using AutoMapper;
+2 using ChefMate_backend;
+3 using ChefMate_backend.Hubs;
+4 using ChefMate_backend.Models;
+5 using ChefMate_backend.Repositories;
+6 using ChefMate_backend.Services;
+7 using Microsoft.AspNetCore.Authentication.JwtBearer;
+8 using Microsoft.AspNetCore.Identity;
+9 using Microsoft.EntityFrameworkCore;
+10 using Microsoft.IdentityModel.Tokens;
+11 using Microsoft.OpenApi.Models;
+12 using System.Text;
+13 
+14 var builder = WebApplication.CreateBuilder(args);
+15 
+16 builder.Services.AddDbContext<ApplicationDbContext>(options =>
+17     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+18 
+19 //Сегрегація бази даних адміністрування
+20 builder.Services.AddDbContext<IdentityContext>(options =>
+21     options.UseSqlServer(builder.Configuration.GetConnectionString("IdentityConnection")));
+22 
+23 IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
+24 builder.Services.AddSingleton(mapper);
+25 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+26 
+27 //Конфігурування базової моделі для JWT токену
+28 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
+29 builder.Services.AddScoped<JwtTokenService>();
+30 
+31 //Налаштування базових вимог до даних користувача для входу
+32 builder.Services.AddIdentity<ChefMateUser, IdentityRole<Guid>>(options =>
+33 {
+34     options.Password.RequireDigit = true;
+35     options.Password.RequiredLength = 6;
+36     options.Password.RequireNonAlphanumeric = false;
+37     options.Password.RequireUppercase = false;
+38     options.Password.RequireLowercase = true;
+39     options.User.RequireUniqueEmail = true;
+40 })
+41 .AddEntityFrameworkStores<IdentityContext>()
+42 .AddDefaultTokenProviders();
+43 
+44 //Додавання Jwt токену як основної служби аутентифікації
+45 builder.Services.AddAuthentication(options =>
+46 {
+47     options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+48     options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+49 }).AddJwtBearer(options =>
+50 {
+51     var jwtSettings = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
+52     options.TokenValidationParameters = new TokenValidationParameters
+53     {
+54         ValidateIssuer = true,
+55         ValidateAudience = true,
+56         ValidateLifetime = true,
+57         RoleClaimType = "role",
+58         ValidateIssuerSigningKey = true,
+59         ValidIssuer = jwtSettings.Issuer,
+60         ValidAudience = jwtSettings.Audience,
+61         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Secret))
+62     };
+63 });
+64 
+65 builder.Services.AddControllersWithViews();
+66 
+67 builder.Services.ConfigureApplicationCookie(options =>
+68 {
+69     options.ExpireTimeSpan = TimeSpan.FromDays(14);
+70     options.SlidingExpiration = true;
+71 });
+72 
+73 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+74 builder.Services.AddScoped<IOrderItemRepository, OrderItemRepository>();
+75 builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
+76 builder.Services.AddScoped<IMenuItemRepository, MenuItemRepository>();
+77 builder.Services.AddScoped<IMenuRepository, MenuRepository>();
+78 builder.Services.AddScoped<IOrganizationRepository, OrganizationRepository>();
+79 builder.Services.AddScoped<IWorkZoneRepository, WorkZoneRepository>();
+80 builder.Services.AddScoped<OrdersService>();
+81 builder.Services.AddScoped<ReportBuilderService>();
+82 builder.Services.AddScoped<ReportService>();
+83 
+84 builder.Services.AddSingleton<IoTHub>();
+85 builder.Services.AddSignalR();
+86 
+87 builder.Services.AddControllers()
+88 .AddJsonOptions(options =>
+89 {
+90     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+91 });
+92 
+93 // Підключення Jwt токенів для SwaggerIO
+94 builder.Services.AddSwaggerGen(options =>
+95 {
+96     options.SwaggerDoc("v1", new OpenApiInfo { Title = "ChefMate", Version = "v1" });
+97 
+98     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+99     {
+100         Name = "Authorization",
+101         Type = SecuritySchemeType.Http,
+102         Scheme = "bearer",
+103         BearerFormat = "JWT",
+104         In = ParameterLocation.Header,
+105         Description = "JWT Authorization header using the Bearer scheme. Example: \"Bearer {token}\""
+106     });
+107 
+108     options.AddSecurityRequirement(new OpenApiSecurityRequirement
+109     {
+110         {
+111             new OpenApiSecurityScheme
+112             {
+113                 Reference = new OpenApiReference
+114                 {
+115                     Type = ReferenceType.SecurityScheme,
+116                     Id = "Bearer"
+117                 }
+118             },
+119             new string[] {}
+120         }
+121     });
+122 });
+123 
+124 var app = builder.Build();
+125 
+126 using (var scope = app.Services.CreateScope())
+127 {
+128     var services = scope.ServiceProvider;
+129 
+130     try
+131     {
+132         var context = services.GetRequiredService<ApplicationDbContext>();
+133         context.Database.Migrate();
+134 
+135         var identityContext = services.GetRequiredService<IdentityContext>();
+136         identityContext.Database.Migrate();
+137     }
+138     catch (Exception ex)
+139     {
+140         var logger = services.GetRequiredService<ILogger<Program>>();
+141         logger.LogError(ex, "Error occurred while migrating the database");
+142     }
+143 
+144     try
+145     {
+146         var roleManager = services.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
+147 
+148         var roles = new List<IdentityRole<Guid>>
+149         {
+150             new IdentityRole<Guid> { Name = "Superadmin" },
+151             new IdentityRole<Guid> { Name = "Admin" },
+152             new IdentityRole<Guid> { Name = "Customer" },
+153             new IdentityRole<Guid> { Name = "Waiter" },
+154             new IdentityRole<Guid> { Name = "IoTDevice" }
+155         };
+156 
+157         foreach (var role in roles)
+158         {
+159             if (!roleManager.RoleExistsAsync(role.Name).Result)
+160             {
+161                 roleManager.CreateAsync(role).Wait();
+162             }
+163         }
+164     }
+165     catch (Exception ex)
+166     {
+167         var logger = services.GetRequiredService<ILogger<Program>>();
+168         logger.LogError(ex, "An error occurred creating the DB.");
+169     }
+170 }
+171 
+172 if (app.Environment.IsDevelopment())
+173 {
+174     app.UseDeveloperExceptionPage();
+175     app.UseSwagger();
+176     app.UseSwaggerUI(c =>
+177     {
+178         c.SwaggerEndpoint("/swagger/v1/swagger.json", "ChefMate V1");
+179         c.RoutePrefix = "swagger";
+180     });
+181 }
+182 else
+183 {
+184     app.UseExceptionHandler("/Home/Error");
+185     app.UseHsts();
+186 }
+187 
+188 app.UseHttpsRedirection();
+189 app.UseStaticFiles();
+190 
+191 app.UseRouting();
+192 
+193 app.UseAuthentication();
+194 app.UseAuthorization();
+195 
+196 app.MapControllerRoute(
+197     name: "default",
+198     pattern: "{controller=Home}/{action=Index}/{id?}");
+199 
+200 app.Run();
+201
+
+Фрагмент коду сервісу для аналізу та збору даних для звітів
+
+1 using ChefMate_backend.Repositories;
+2 
+3 public class ReportService
+4 {
+5     private readonly IOrderRepository _orderRepository;
+6     private readonly IMenuItemRepository _menuItemRepository;
+7 
+8     public ReportService(IOrderRepository orderRepository, IMenuItemRepository menuItemRepository)
+9     {
+10         _orderRepository = orderRepository;
+11         _menuItemRepository = menuItemRepository;
+12     }
+13 
+14     public async Task<WeeklyReport> GenerateWeeklyReport(DateTime startDate, DateTime endDate, Guid organizationId)
+15     {
+16         var orders = await _orderRepository.RetrieveByPeriod(startDate, endDate, organizationId);
+17         
+18         if (!orders.Any())
+19         {
+20             return new WeeklyReport
+21             {
+22                 StartDate = startDate,
+23                 EndDate = endDate,
+24                 TotalIncome = 0,
+25                 AverageCheck = 0
+26             };
+27         }
+28 
+29         var totalIncome = orders.Sum(o => o.TotalAmount ?? 0);
+30 
+31         var averageCheck = totalIncome / orders.Count;
+32 
+33         var topMenuItems = orders
+34             .SelectMany(o => o.OrderItems)
+35             .GroupBy(oi => oi.MenuItem.Name)
+36             .Select(g => new TopMenuItem
+37             {
+38                 Name = g.Key,
+39                 TotalIncome = g.Sum(oi => oi.Price * oi.Quantity)
+40             })
+41             .OrderByDescending(item => item.TotalIncome)
+42             .Take(3)
+43             .ToList();
+44 
+45         var dailySales = orders
+46             .GroupBy(o => o.OrderDate.DayOfWeek)
+47             .ToDictionary(
+48                 g => g.Key.ToString(),
+49                 g => g.Sum(o => o.TotalAmount ?? 0)
+50             );
+51 
+52         return new WeeklyReport
+53         {
+54             StartDate = startDate,
+55             EndDate = endDate,
+56             TotalIncome = totalIncome,
+57             AverageCheck = averageCheck,
+58             TopMenuItems = topMenuItems,
+59             DailySales = dailySales
+60         };
+61     }
+62 
+63     public async Task<DailyReport> GetDailyReportData(DateTime reportDate, Guid organizationId)
+64     {
+65         var ordersForDate = await _orderRepository.RetrieveByDate(reportDate, organizationId);
+66 
+67         var totalOrders = ordersForDate.Count;
+68 
+69         var totalIncome = ordersForDate
+70             .Where(o => o.TotalAmount.HasValue)
+71             .Sum(o => o.TotalAmount.Value);
+72 
+73         var topMenuItems = ordersForDate
+74             .SelectMany(o => o.OrderItems)
+75             .GroupBy(oi => oi.MenuItem.Name)
+76             .Select(g => new TopMenuItem
+77             {
+78                 Name = g.Key,
+79                 TotalIncome = g.Sum(oi => oi.Price * oi.Quantity)
+80             })
+81             .OrderByDescending(d => d.TotalIncome)
+82             .Take(5)
+83             .ToList();
+84 
+85         return new DailyReport()
+86         {
+87             TotalOrders = totalOrders,
+88             TotalIncome = totalIncome,
+89             TopMenuItems = topMenuItems
+90         };
+91 
+92     }
+93     public async Task<FinancialReport> GetFinancialReport(DateTime reportDate, Guid organizationId)
+94     {
+95         var ordersForDate = await _orderRepository.RetrieveByDate(reportDate, organizationId);
+96 
+97         var totalOrders = ordersForDate.Count;
+98 
+99         var totalIncome = ordersForDate
+100             .Where(o => o.TotalAmount.HasValue)
+101             .Sum(o => o.TotalAmount.Value);
+102 
+103         var averageOrderValue = totalIncome / totalOrders;
+104 
+105         var minOrderValue = ordersForDate
+106             .Where(o => o.TotalAmount.HasValue)
+107             .Min(o => o.TotalAmount.Value);
+108 
+109         var maxOrderValue = ordersForDate
+110             .Where(o => o.TotalAmount.HasValue)
+111             .Max(o => o.TotalAmount.Value);
+112 
+113         return new FinancialReport
+114         {
+115             ReportDate = reportDate,
+116             TotalOrders = totalOrders,
+117             TotalIncome = totalIncome,
+118             AverageOrderValue = averageOrderValue,
+119             MinOrderValue = minOrderValue,
+120             MaxOrderValue = maxOrderValue,
+121         };
+122     }
+123 
+124     public async Task<List<AccessabilityReport>> GetAccessabilityReport(Guid menuId)
+125     {
+126         var menuItems = await _menuItemRepository.RetriveByMenuId(menuId);
+127 
+128         var reportData = menuItems.Select(x => new AccessabilityReport
+129         {
+130             IsAvaivable = x.IsAvailable,
+131             Name = x.Name,
+132             Price = x.Price
+133         }).ToList(); 
+134 
+135         return reportData;
+136     }
+137 
+138     public class WeeklyReport
+139     {
+140         public DateTime StartDate { get; set; }
+141         public DateTime EndDate { get; set; }
+142         public decimal TotalIncome { get; set; }
+143         public decimal AverageCheck { get; set; }
+144         public List<TopMenuItem> TopMenuItems { get; set; } = new();
+145         public Dictionary<string, decimal> DailySales { get; set; } = new();
+146     }
+147 
+148     public class DailyReport
+149     {
+150         public DateTime ReportDate { get; set; }
+151         public int TotalOrders { get; set; }
+152         public decimal TotalIncome { get; set; }
+153         public List<TopMenuItem> TopMenuItems { get; set; }
+154     }
+155 
+156     public class TopMenuItem
+157     {
+158         public string Name { get; set; }
+159         public decimal TotalIncome { get; set; }
+160     }
+161 
+162     public class FinancialReport
+163     {
+164         public DateTime ReportDate { get; set; }
+165         public int TotalOrders { get; set; }
+166         public decimal TotalIncome { get; set; }
+167         public decimal AverageOrderValue { get; set; }
+168         public decimal MinOrderValue { get; set; }
+169         public decimal MaxOrderValue { get; set; }
+170     }
+171 
+172     public class AccessabilityReport
+173     {
+174         public string Name { get; set; }
+175         public decimal Price { get; set; }
+176         public bool IsAvaivable { get; set; }
+177     }
+178 }
+
+
